@@ -5,8 +5,10 @@ import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.teriteri.backend.im.IMServer;
 import com.teriteri.backend.mapper.UserVideoMapper;
 import com.teriteri.backend.mapper.VideoMapper;
+import com.teriteri.backend.mapper.UserMapper;
 import com.teriteri.backend.pojo.IMResponse;
 import com.teriteri.backend.pojo.UserVideo;
+import com.teriteri.backend.pojo.User;
 import com.teriteri.backend.pojo.Video;
 import com.teriteri.backend.service.message.MsgUnreadService;
 import com.teriteri.backend.service.video.UserVideoService;
@@ -38,6 +40,9 @@ public class UserVideoServiceImpl implements UserVideoService {
 
     @Autowired
     private RedisUtil redisUtil;
+
+    @Autowired
+    private UserMapper userMapper;
 
     @Autowired
     @Qualifier("taskExecutor")
@@ -196,6 +201,30 @@ public class UserVideoServiceImpl implements UserVideoService {
     }
 
     /**
+     * 投币
+     * @param uid   用户ID
+     * @param vid   视频ID
+     * @param isCoin 是否投币 true投币
+     * @return  返回更新后的信息
+     */
+    @Override
+    public void coinOrCancel(Integer uid, Integer vid, boolean isCoin) {
+        UpdateWrapper<UserVideo> updateWrapper = new UpdateWrapper<>();
+        updateWrapper.eq("uid", uid).eq("vid", vid);
+        UpdateWrapper<User> updateWrapper1 = new UpdateWrapper<>();
+        updateWrapper1.eq("uid", uid);
+        if (isCoin) {
+            updateWrapper.setSql("coin = 1");
+            CompletableFuture.runAsync(() -> {
+                videoStatsService.updateStats(vid, "coin", isCoin, 1);
+            }, taskExecutor);
+            updateWrapper1.setSql("coin = CASE WHEN coin -  1 < 0 THEN 0 ELSE coin - 1 END");
+            userVideoMapper.update(null, updateWrapper);
+            userMapper.update(null, updateWrapper1);
+        }
+    }
+
+    /**
      * 收藏或取消收藏
      * @param uid   用户ID
      * @param vid   视频ID
@@ -216,4 +245,6 @@ public class UserVideoServiceImpl implements UserVideoService {
         }, taskExecutor);
         userVideoMapper.update(null, updateWrapper);
     }
+
+
 }

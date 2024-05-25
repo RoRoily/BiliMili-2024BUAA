@@ -46,4 +46,20 @@ public class UserVideoController {
         return customResponse;
     }
 
+    /**
+     * 投币
+     * @param vid   视频ID
+     * @param isCoin    是否投币 True投币
+     * @return 返回用户与该视频更新后的交互数据
+     */
+    @PostMapping("/video/love-or-not")
+    public CustomResponse CoinOrNot(@RequestParam("vid") Integer vid,
+                                    @RequestParam("isLove") boolean isCoin) {
+        Integer uid = currentUser.getUserId();
+        CustomResponse customResponse = new CustomResponse();
+        userVideoService.coinOrCancel(uid, vid, isCoin);
+//        customResponse.setData(userVideoService.coinOrCancel(uid, vid, isCoin));
+        return customResponse;
+    }
+
 }
