@@ -205,7 +205,6 @@ public class UserVideoServiceImpl implements UserVideoService {
      * @param uid   用户ID
      * @param vid   视频ID
      * @param isCoin 是否投币 true投币
-     * @return  返回更新后的信息
      */
     @Override
     public void coinOrCancel(Integer uid, Integer vid, boolean isCoin) {
@@ -229,7 +228,6 @@ public class UserVideoServiceImpl implements UserVideoService {
      * @param uid   用户ID
      * @param vid   视频ID
      * @param isCollect 是否收藏 true收藏 false取消
-     * @return  返回更新后的信息
      */
     @Override
     public void collectOrCancel(Integer uid, Integer vid, boolean isCollect) {

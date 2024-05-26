@@ -22,6 +22,14 @@ public interface UserVideoService {
     UserVideo setLoveOrUnlove(Integer uid, Integer vid, boolean isLove, boolean isSet);
 
     /**
+     * 投币
+     * @param uid   用户ID
+     * @param vid   视频ID
+     * @param isCoin 是否投币 true投币
+     */
+    public void coinOrCancel(Integer uid, Integer vid, boolean isCoin);
+
+    /**
      * 收藏或取消收藏
      * @param uid   用户ID
      * @param vid   视频ID
