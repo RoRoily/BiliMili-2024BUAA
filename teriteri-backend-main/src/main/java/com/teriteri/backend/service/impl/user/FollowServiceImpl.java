@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.teriteri.backend.mapper.FollowMapper;
 import com.teriteri.backend.pojo.Favorite;
 import com.teriteri.backend.pojo.Follow;
+import com.teriteri.backend.pojo.UserRecord;
 import com.teriteri.backend.service.user.FollowService;
 import com.teriteri.backend.utils.RedisUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -103,6 +104,13 @@ public class FollowServiceImpl implements FollowService {
         redisUtil.zset(key,uidFans);
         String key2 = "fans:" + uidFans;
         redisUtil.zset(key2,uidFollow);
+        String key3 = "userRecord" + uidFollow;
+        Set<Object> userRecordSet = redisUtil.zRange(key3, 0, 0);
+        //注意这里
+        UserRecord userRecord = (UserRecord) userRecordSet.iterator().next();
+        redisUtil.zsetDelMember(key3,userRecord);
+        userRecord.setFansNew(userRecord.getFansNew()+1);
+        redisUtil.zset(key3,userRecord);
     }
     /**
      * 取关用户
@@ -117,9 +125,16 @@ public class FollowServiceImpl implements FollowService {
         if(follow==null) return;
         else followMapper.delete(queryWrapper);
         String key = "follow:" + uidFollow;
-        redisUtil.delValue(key);
+        redisUtil.zsetDelMember(key,uidFans);
         String key2 = "fans:" + uidFans;
-        redisUtil.delValue(key2);
+        redisUtil.zsetDelMember(key2,uidFollow);
+        String key3 = "userRecord" + uidFollow;
+        Set<Object> userRecordSet = redisUtil.zRange(key3, 0, 0);
+        //注意这里
+        UserRecord userRecord = (UserRecord) userRecordSet.iterator().next();
+        redisUtil.zsetDelMember(key3,userRecord);
+        userRecord.setFansNew(userRecord.getFansNew()-1);
+        redisUtil.zset(key3,userRecord);
     }
     /**
      * 更新其他人是否可以查看关注列表

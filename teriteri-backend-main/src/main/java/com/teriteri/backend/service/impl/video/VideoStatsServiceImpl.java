@@ -2,7 +2,11 @@ package com.teriteri.backend.service.impl.video;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.teriteri.backend.mapper.VideoMapper;
 import com.teriteri.backend.mapper.VideoStatsMapper;
+import com.teriteri.backend.pojo.CustomResponse;
+import com.teriteri.backend.pojo.UserRecord;
+import com.teriteri.backend.pojo.Video;
 import com.teriteri.backend.pojo.VideoStats;
 import com.teriteri.backend.service.video.VideoStatsService;
 import com.teriteri.backend.utils.RedisUtil;
@@ -25,6 +29,9 @@ public class VideoStatsServiceImpl implements VideoStatsService {
     @Autowired
     @Qualifier("taskExecutor")
     private Executor taskExecutor;
+
+    @Autowired
+    private VideoMapper videoMapper;
 
     /**
      * 根据视频ID查询视频常变数据
@@ -68,6 +75,22 @@ public class VideoStatsServiceImpl implements VideoStatsService {
         }
         videoStatsMapper.update(null, updateWrapper);
         redisUtil.delValue("videoStats:" + vid);
+        //更新视频作者的播放数据
+        QueryWrapper<Video> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("vid", vid);
+        Integer uid = videoMapper.selectOne(queryWrapper).getUid();
+        String key = "userRecord"+uid;
+        try{
+            UserRecord userRecord = (UserRecord) redisUtil.zRange(key,0,0).iterator().next();
+            redisUtil.zsetDelMember(key,userRecord);
+            if(column.equals("play")){
+                userRecord.setPlayNew(userRecord.getPlayNew()+1);
+            }
+            redisUtil.zset(key,userRecord);
+        }catch (Exception e){
+            e.printStackTrace();
+            new CustomResponse(404,"未找到视频作者的记录",null);
+        }
     }
 
     /**
@@ -88,6 +111,21 @@ public class VideoStatsServiceImpl implements VideoStatsService {
         }
         videoStatsMapper.update(null, updateWrapper);
         redisUtil.delValue("videoStats:" + vid);
+        //更新视频作者的点赞数据
+        QueryWrapper<Video> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("vid", vid);
+        Integer uid = videoMapper.selectOne(queryWrapper).getUid();
+        String key = "userRecord"+uid;
+        try{
+            UserRecord userRecord = (UserRecord) redisUtil.zRange(key,0,0).iterator().next();
+            redisUtil.zsetDelMember(key,userRecord);
+            if(addGood)userRecord.setLoveNew(userRecord.getLoveNew()+1);
+            else userRecord.setLoveNew(Math.max(userRecord.getLoveNew()-1,0));
+            redisUtil.zset(key,userRecord);
+        }catch (Exception e){
+            e.printStackTrace();
+            new CustomResponse(404,"未找到视频作者的记录",null);
+        }
     }
     /**
      * 更新视频的硬币数

@@ -6,10 +6,7 @@ import com.teriteri.backend.im.IMServer;
 import com.teriteri.backend.mapper.FavoriteMapper;
 import com.teriteri.backend.mapper.MsgUnreadMapper;
 import com.teriteri.backend.mapper.UserMapper;
-import com.teriteri.backend.pojo.CustomResponse;
-import com.teriteri.backend.pojo.Favorite;
-import com.teriteri.backend.pojo.MsgUnread;
-import com.teriteri.backend.pojo.User;
+import com.teriteri.backend.pojo.*;
 import com.teriteri.backend.pojo.dto.UserDTO;
 import com.teriteri.backend.service.user.UserAccountService;
 import com.teriteri.backend.service.user.UserService;
@@ -168,6 +165,15 @@ public class UserAccountServiceImpl implements UserAccountService {
         msgUnreadMapper.insert(new MsgUnread(new_user.getUid(),0,0,0,0,0,0));
         favoriteMapper.insert(new Favorite(null, new_user.getUid(), 1, 1, null, "默认收藏夹", "", 0, null));
         esUtil.addUser(new_user);
+        UserRecord userRecord = new UserRecord(
+                new_user.getUid(),
+                new ArrayList<>(0), 0,0,
+                new ArrayList<>(0), 0,0,
+                new ArrayList<>(0), 0,0,
+                new ArrayList<>(0), 0,0
+        );
+        String key = "userRecord" + userRecord.getUid();
+        redisUtil.zset(key,userRecord);
         customResponse.setMessage("注册成功！欢迎加入T站");
         return customResponse;
     }
