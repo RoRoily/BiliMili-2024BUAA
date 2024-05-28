@@ -5,16 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="aa7e2d3b-8a77-4a76-a97e-eec23680149e" name="更改" comment="v0.0.1">
-      <change afterPath="$PROJECT_DIR$/teriteri-backend-main/src/main/java/com/teriteri/backend/controller/ArticleUploadController.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/teriteri-backend-main/src/main/java/com/teriteri/backend/pojo/ESArticle.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/teriteri-backend-main/src/main/java/com/teriteri/backend/pojo/dto/ArticleUploadDTO.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/teriteri-backend-main/src/main/java/com/teriteri/backend/service/article/ArticleUploadService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/teriteri-backend-main/src/main/resources/log4j.properties" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/teriteri-backend-main/src/main/java/com/teriteri/backend/pojo/Article.java" beforeDir="false" afterPath="$PROJECT_DIR$/teriteri-backend-main/src/main/java/com/teriteri/backend/pojo/Article.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/teriteri-backend-main/src/main/java/com/teriteri/backend/service/impl/article/ArticleServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/teriteri-backend-main/src/main/java/com/teriteri/backend/service/impl/article/ArticleServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/teriteri-backend-main/src/main/java/com/teriteri/backend/service/impl/article/ArticleUploadServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/teriteri-backend-main/src/main/java/com/teriteri/backend/service/impl/article/ArticleUploadServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/teriteri-backend-main/src/main/java/com/teriteri/backend/utils/ESUtil.java" beforeDir="false" afterPath="$PROJECT_DIR$/teriteri-backend-main/src/main/java/com/teriteri/backend/utils/ESUtil.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -105,7 +97,7 @@
       <workItem from="1716811257132" duration="1264000" />
       <workItem from="1716812694637" duration="5086000" />
       <workItem from="1716817836323" duration="7043000" />
-      <workItem from="1716862152176" duration="1443000" />
+      <workItem from="1716862152176" duration="2147000" />
     </task>
     <task id="LOCAL-00001" summary="v0.0.1">
       <option name="closed" value="true" />
@@ -139,7 +131,23 @@
       <option name="project" value="LOCAL" />
       <updated>1716862180933</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="v0.0.1">
+      <option name="closed" value="true" />
+      <created>1716863616630</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1716863616630</updated>
+    </task>
+    <task id="LOCAL-00006" summary="v0.0.1">
+      <option name="closed" value="true" />
+      <created>1716863685610</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1716863685610</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
