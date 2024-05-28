@@ -2,9 +2,7 @@ package com.teriteri.backend.controller;
 
 import com.teriteri.backend.pojo.CustomResponse;
 import com.teriteri.backend.pojo.dto.ArticleUploadDTO;
-import com.teriteri.backend.pojo.dto.VideoUploadInfoDTO;
 import com.teriteri.backend.service.article.ArticleUploadService;
-import com.teriteri.backend.service.video.VideoUploadService;
 import com.teriteri.backend.utils.OssUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;

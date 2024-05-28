@@ -1,15 +1,10 @@
 package com.teriteri.backend.service.impl.article;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.teriteri.backend.mapper.VideoMapper;
 import com.teriteri.backend.mapper.VideoStatsMapper;
 import com.teriteri.backend.pojo.CustomResponse;
-import com.teriteri.backend.pojo.Video;
-import com.teriteri.backend.pojo.VideoStats;
 import com.teriteri.backend.pojo.dto.ArticleUploadDTO;
-import com.teriteri.backend.pojo.dto.VideoUploadInfoDTO;
 import com.teriteri.backend.service.article.ArticleUploadService;
 import com.teriteri.backend.service.utils.CurrentUser;
-import com.teriteri.backend.service.video.VideoUploadService;
 import com.teriteri.backend.utils.ESUtil;
 import com.teriteri.backend.utils.OssUtil;
 import com.teriteri.backend.utils.RedisUtil;
@@ -19,13 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.Paths;
-import java.util.Date;
 import java.util.concurrent.*;
 
 @Slf4j
