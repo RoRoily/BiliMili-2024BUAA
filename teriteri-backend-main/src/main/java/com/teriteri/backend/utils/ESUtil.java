@@ -240,4 +240,19 @@ public class ESUtil {
             return Collections.emptyList();
         }
     }
+
+    /**
+     * 更新专栏文档
+     * @param article   专栏
+     */
+
+    public void updateArticle(Article article) throws IOException {
+        try {
+            ESArticle esArticle = new ESArticle(article.getAid(), article.getUid(), article.getTitle(), article.getMcId(), article.getScId(), article.getTags(), article.getStatus());
+            client.update(u -> u.index("article").id(article.getAid().toString()).doc(esArticle), ESArticle.class);
+        } catch (IOException e) {
+            log.error("更新ElasticSearch专栏文档时出错了：" + e);
+            throw e;
+        }
+    }
 }

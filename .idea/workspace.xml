@@ -5,7 +5,16 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="aa7e2d3b-8a77-4a76-a97e-eec23680149e" name="更改" comment="v0.0.1">
+      <change afterPath="$PROJECT_DIR$/teriteri-backend-main/src/main/java/com/teriteri/backend/controller/ArticleUploadController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/teriteri-backend-main/src/main/java/com/teriteri/backend/pojo/ESArticle.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/teriteri-backend-main/src/main/java/com/teriteri/backend/pojo/dto/ArticleUploadDTO.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/teriteri-backend-main/src/main/java/com/teriteri/backend/service/article/ArticleUploadService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/teriteri-backend-main/src/main/java/com/teriteri/backend/pojo/Article.java" beforeDir="false" afterPath="$PROJECT_DIR$/teriteri-backend-main/src/main/java/com/teriteri/backend/pojo/Article.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/teriteri-backend-main/src/main/java/com/teriteri/backend/service/impl/article/ArticleServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/teriteri-backend-main/src/main/java/com/teriteri/backend/service/impl/article/ArticleServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/teriteri-backend-main/src/main/java/com/teriteri/backend/service/impl/article/ArticleUploadServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/teriteri-backend-main/src/main/java/com/teriteri/backend/service/impl/article/ArticleUploadServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/teriteri-backend-main/src/main/java/com/teriteri/backend/utils/ESUtil.java" beforeDir="false" afterPath="$PROJECT_DIR$/teriteri-backend-main/src/main/java/com/teriteri/backend/utils/ESUtil.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -51,6 +60,7 @@
     "ASKED_ADD_EXTERNAL_FILES": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "Spring Boot.BackendApplication.executor": "Run",
     "git-widget-placeholder": "pxy",
     "kotlin-language-version-configured": "true",
     "last_opened_file_path": "D:/ziliao/软件工程基础/实验/teriteri",
@@ -61,7 +71,7 @@
     "node.js.selected.package.standard": "",
     "node.js.selected.package.tslint": "(autodetect)",
     "nodejs_package_manager_path": "npm",
-    "settings.editor.selected.configurable": "spring",
+    "settings.editor.selected.configurable": "preferences.pluginManager",
     "ts.external.directory.path": "D:\\Program Files\\JetBrains\\IntelliJ IDEA 2024.1.1\\plugins\\javascript-plugin\\jsLanguageServicesImpl\\external",
     "vue.rearranger.settings.migration": "true"
   }
@@ -95,6 +105,7 @@
       <workItem from="1716811257132" duration="1264000" />
       <workItem from="1716812694637" duration="5086000" />
       <workItem from="1716817836323" duration="7043000" />
+      <workItem from="1716862152176" duration="1443000" />
     </task>
     <task id="LOCAL-00001" summary="v0.0.1">
       <option name="closed" value="true" />
@@ -120,7 +131,15 @@
       <option name="project" value="LOCAL" />
       <updated>1716824406949</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="v0.0.1">
+      <option name="closed" value="true" />
+      <created>1716862180933</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1716862180933</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
