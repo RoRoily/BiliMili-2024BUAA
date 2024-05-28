@@ -480,8 +480,7 @@ export default {
 
         // 初始化实时弹幕的websocket
         async initWebsocket() {
-            const wsBaseUrl = process.env.VUE_APP_WS_DANMU_URL;
-            const socketUrl = `${wsBaseUrl}/ws/danmu/${this.$route.params.vid}`;
+            const socketUrl = `ws://localhost:7070/ws/danmu/${this.$route.params.vid}`;
             if (this.socket != null) {
                 await this.socket.close();
                 this.socket = null;

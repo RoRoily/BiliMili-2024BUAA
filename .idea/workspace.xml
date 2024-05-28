@@ -5,21 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="aa7e2d3b-8a77-4a76-a97e-eec23680149e" name="更改" comment="v0.0.1">
-      <change afterPath="$PROJECT_DIR$/.idea/dataSources.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/teriteri-backend-main/src/main/java/com/teriteri/backend/config/SchedulerConfig.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/teriteri-backend-main/src/main/java/com/teriteri/backend/controller/UserRecordController.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/teriteri-backend-main/src/main/java/com/teriteri/backend/mapper/UserRecordMapper.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/teriteri-backend-main/src/main/java/com/teriteri/backend/pojo/UserRecord.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/teriteri-backend-main/src/main/java/com/teriteri/backend/service/impl/record/UserRecordServiceImpl.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/teriteri-backend-main/src/main/java/com/teriteri/backend/service/record/UserRecordService.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/teriteri-backend-main/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/teriteri-backend-main/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/teriteri-backend-main/src/main/java/com/teriteri/backend/mapper/UserMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/teriteri-backend-main/src/main/java/com/teriteri/backend/mapper/UserMapper.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/teriteri-backend-main/src/main/java/com/teriteri/backend/service/impl/article/ArticleUploadServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/teriteri-backend-main/src/main/java/com/teriteri/backend/service/impl/article/ArticleUploadServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/teriteri-backend-main/src/main/java/com/teriteri/backend/service/impl/user/FollowServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/teriteri-backend-main/src/main/java/com/teriteri/backend/service/impl/user/FollowServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/teriteri-backend-main/src/main/java/com/teriteri/backend/service/impl/user/UserAccountServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/teriteri-backend-main/src/main/java/com/teriteri/backend/service/impl/user/UserAccountServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/teriteri-backend-main/src/main/java/com/teriteri/backend/service/impl/video/FavoriteVideoServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/teriteri-backend-main/src/main/java/com/teriteri/backend/service/impl/video/FavoriteVideoServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/teriteri-backend-main/src/main/java/com/teriteri/backend/service/impl/video/VideoStatsServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/teriteri-backend-main/src/main/java/com/teriteri/backend/service/impl/video/VideoStatsServiceImpl.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -108,7 +94,7 @@
       <workItem from="1716729213619" duration="2549000" />
       <workItem from="1716811257132" duration="1264000" />
       <workItem from="1716812694637" duration="5086000" />
-      <workItem from="1716817836323" duration="6024000" />
+      <workItem from="1716817836323" duration="7043000" />
     </task>
     <task id="LOCAL-00001" summary="v0.0.1">
       <option name="closed" value="true" />
@@ -126,7 +112,15 @@
       <option name="project" value="LOCAL" />
       <updated>1716729359483</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="v0.0.1">
+      <option name="closed" value="true" />
+      <created>1716824406949</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1716824406949</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">

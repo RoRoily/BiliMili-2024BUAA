@@ -14,7 +14,7 @@
                 </picture>
                 <span>首页</span>
                 <i class="iconfont icon-xiajiantou" :class="isOpen ? 'arrow-down' : ''"></i>
-            </div>
+            </div>  <!--该代码块实现点击图片跳转到主页-->
             <div class="entry-title" v-else @click="this.$router.push('/')">
                 <i class="iconfont icon-dianshi"></i>
                 <span>首页</span>
@@ -38,7 +38,7 @@
                 <i class="iconfont icon-xiazai"></i>
                 <span>下载客户端</span>
             </div>
-        </div>
+        </div> 
         <!-- 中间 -->
         <div class="center-search-container" :style="isShowSearchInput ? '' : 'display: none;'">
             <div class="center-search__bar" :class="isSearchPopShow ? 'is-focus' : ''">
