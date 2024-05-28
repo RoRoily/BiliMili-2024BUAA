@@ -1,8 +1,16 @@
 package com.teriteri.backend.service.impl.record;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.teriteri.backend.mapper.UserMapper;
+import com.teriteri.backend.mapper.UserRecordMapper;
+import com.teriteri.backend.mapper.UserRecordStringMapper;
+import com.teriteri.backend.pojo.CustomResponse;
 import com.teriteri.backend.pojo.UserRecord;
+import com.teriteri.backend.pojo.UserRecordString;
 import com.teriteri.backend.service.record.UserRecordService;
+import com.teriteri.backend.utils.JsonUtil;
 import com.teriteri.backend.utils.RedisUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +28,122 @@ public class UserRecordServiceImpl implements UserRecordService {
     private RedisUtil redisUtil;
     @Autowired
     private UserMapper userMapper;
+    @Autowired
+    private UserRecordStringMapper userRecordStringMapper;
+    /**
+     * 将UserRecord类记录至对应的UserRecordString类
+     *
+     * @param userRecord 用户记录
+     * @return 用户记录（字符串存储）
+     */
+    @Override
+    public UserRecordString saveUserRecordToString(UserRecord userRecord) throws JsonProcessingException {
+        List<Integer> plays = userRecord.getPlay();
+        String playJson = JsonUtil.ObjectToJson(plays);
+        List<Integer> loves = userRecord.getLove();
+        String lovesJson = JsonUtil.ObjectToJson(loves);
+        List<Integer> collects = userRecord.getCollect();
+        String collectJson = JsonUtil.ObjectToJson(collects);
+        List<Integer> fans = userRecord.getFans();
+        String fansJson = JsonUtil.ObjectToJson(fans);
+        return new UserRecordString(
+                userRecord.getUid(),
+                playJson,
+                userRecord.getPlayNew(),
+                userRecord.getPlayOld(),
+                lovesJson,
+                userRecord.getLoveNew(),
+                userRecord.getLoveOld(),
+                collectJson,
+                userRecord.getCollectNew(),
+                userRecord.getCollectOld(),
+                fansJson,
+                userRecord.getFansNew(),
+                userRecord.getFansOld()
+        );
+    }
+
+    /**
+     * 将UserRecordString类记录至对应的UserRecord类
+     *
+     * @param userRecordString 用户记录（字符串存储）
+     * @return 用户记录
+     */
+    @Override
+    public UserRecord findUserRecordByString(UserRecordString userRecordString) throws JsonProcessingException {
+        List<Integer> plays = JsonUtil.JsonToObject(userRecordString.getPlayJson(),List.class);
+        List<Integer> loves = JsonUtil.JsonToObject(userRecordString.getLoveJson(),List.class);
+        List<Integer> collects = JsonUtil.JsonToObject(userRecordString.getCollectJson(),List.class);
+        List<Integer> fans = JsonUtil.JsonToObject(userRecordString.getFanJson(),List.class);
+        return new UserRecord(
+                userRecordString.getUid(),
+                plays,
+                userRecordString.getPlayNew(),
+                userRecordString.getPlayOld(),
+                loves,
+                userRecordString.getLoveNew(),
+                userRecordString.getLoveOld(),
+                collects,
+                userRecordString.getCollectNew(),
+                userRecordString.getCollectOld(),
+                fans,
+                userRecordString.getFansNew(),
+                userRecordString.getFansOld()
+        );
+    }
+
+    /**
+     * 将UserRecordString类存入数据库，看情况更新数据库还是直接存
+     *
+     * @param userRecordString 用户记录（字符串存储）
+     */
+    @Override
+    public void saveUserRecordStringToDatabase(UserRecordString userRecordString) {
+        int uid = userRecordString.getUid();
+        QueryWrapper<UserRecordString> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("uid",uid);
+        UserRecordString userRecordString1 = userRecordStringMapper.selectOne(queryWrapper);
+        if(userRecordString1!=null){
+            userRecordStringMapper.delete(queryWrapper);
+        }
+        userRecordStringMapper.insert(userRecordString);
+    }
+
+    /**
+     * 根据uid获取UserRecord,如果redis没有则将数据库的内容存入redis中
+     *
+     * @param uid 用户uid
+     * @return 用户记录
+     */
+    @Override
+    public UserRecord getUserRecordByUid(Integer uid) {
+        String key = "userRecord:" + uid;
+        UserRecord userRecord = null;
+        try{
+            userRecord = (UserRecord) redisUtil.zRange(key,0,-1).iterator().next();
+            if(userRecord == null){
+                QueryWrapper<UserRecordString> queryWrapperUserRecordString = new QueryWrapper<>();
+                queryWrapperUserRecordString.eq("uid", uid);
+                UserRecordString userRecordString = userRecordStringMapper.selectOne(queryWrapperUserRecordString);
+                if(userRecordString != null){
+                    redisUtil.zset(key,userRecord);
+                    userRecord = findUserRecordByString(userRecordString);
+                }
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+            new CustomResponse(404,"未找到记录",null);
+        }
+        if(userRecord == null){
+            try{
+                Exception e = new Exception("点赞量为空");
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+            return null;
+        }
+        return userRecord;
+    }
 
     /**
      * 获取近七天播放量增长量
@@ -29,17 +153,16 @@ public class UserRecordServiceImpl implements UserRecordService {
      */
     @Override
     public List<Integer> getPlayRecordByUid(Integer uid) {
-        String key = "userRecord" + uid;
-        UserRecord userRecord = (UserRecord) redisUtil.zRange(key,0,0).iterator().next();
+        UserRecord userRecord = getUserRecordByUid(uid);
         return userRecord.getPlay();
     }
 
     @Override
-    public void setPlayRecordByUid(Integer uid) {
-        String key = "userRecord" + uid;
-        UserRecord userRecord = (UserRecord) redisUtil.zRange(key,0,0).iterator().next();
+    public void setPlayRecordByUid(Integer uid) throws JsonProcessingException {
+        String key = "userRecord:" + uid;
+        UserRecord userRecord = getUserRecordByUid(uid);
         redisUtil.zsetDelMember(key,userRecord);
-        int delta = userRecord.getPlayNew()-userRecord.getPlayOld();
+        int delta = userRecord.getPlayNew();
         List<Integer> deltaWeek = new ArrayList<>();
         for(int i=1;i<7;++i){
             deltaWeek.add(userRecord.getPlay().get(i));
@@ -49,6 +172,8 @@ public class UserRecordServiceImpl implements UserRecordService {
         userRecord.setPlayOld(userRecord.getPlayNew());
         userRecord.setPlayNew(0);
         redisUtil.zset(key,userRecord);
+        UserRecordString userRecordString = saveUserRecordToString(userRecord);
+        saveUserRecordStringToDatabase(userRecordString);
     }
 
     /**
@@ -59,16 +184,16 @@ public class UserRecordServiceImpl implements UserRecordService {
      */
     @Override
     public List<Integer> getLoveRecordByUid(Integer uid) {
-        String key = "userRecord" + uid;
-        UserRecord userRecord = (UserRecord) redisUtil.zRange(key,0,0).iterator().next();
+        UserRecord userRecord = getUserRecordByUid(uid);
         return userRecord.getLove();
     }
 
     @Override
-    public void setLoveRecordByUid(Integer uid) {
-        String key = "userRecord" + uid;
-        UserRecord userRecord = (UserRecord) redisUtil.zRange(key,0,0).iterator().next();
-        int delta = userRecord.getLoveNew()-userRecord.getLoveOld();
+    public void setLoveRecordByUid(Integer uid) throws JsonProcessingException {
+        String key = "userRecord:" + uid;
+        UserRecord userRecord = getUserRecordByUid(uid);
+        redisUtil.zsetDelMember(key,userRecord);
+        int delta = userRecord.getLoveNew();
         List<Integer> deltaWeek = new ArrayList<>();
         for(int i=1;i<7;++i){
             deltaWeek.add(userRecord.getLove().get(i));
@@ -78,6 +203,8 @@ public class UserRecordServiceImpl implements UserRecordService {
         userRecord.setLoveOld(userRecord.getLoveNew());
         userRecord.setLoveNew(0);
         redisUtil.zset(key,userRecord);
+        UserRecordString userRecordString = saveUserRecordToString(userRecord);
+        saveUserRecordStringToDatabase(userRecordString);
     }
 
     /**
@@ -88,16 +215,16 @@ public class UserRecordServiceImpl implements UserRecordService {
      */
     @Override
     public List<Integer> getCollectRecordByUid(Integer uid) {
-        String key = "userRecord" + uid;
-        UserRecord userRecord = (UserRecord) redisUtil.zRange(key,0,0).iterator().next();
+        UserRecord userRecord = getUserRecordByUid(uid);
         return userRecord.getCollect();
     }
 
     @Override
-    public void setCollectRecordByUid(Integer uid) {
-        String key = "userRecord" + uid;
-        UserRecord userRecord = (UserRecord) redisUtil.zRange(key,0,0).iterator().next();
-        int delta = userRecord.getCollectNew()-userRecord.getCollectOld();
+    public void setCollectRecordByUid(Integer uid) throws JsonProcessingException {
+        String key = "userRecord:" + uid;
+        UserRecord userRecord = getUserRecordByUid(uid);
+        redisUtil.zsetDelMember(key,userRecord);
+        int delta = userRecord.getCollectNew();
         List<Integer> deltaWeek = new ArrayList<>();
         for(int i=1;i<7;++i){
             deltaWeek.add(userRecord.getCollect().get(i));
@@ -107,6 +234,8 @@ public class UserRecordServiceImpl implements UserRecordService {
         userRecord.setCollectOld(userRecord.getCollectNew());
         userRecord.setCollectNew(0);
         redisUtil.zset(key,userRecord);
+        UserRecordString userRecordString = saveUserRecordToString(userRecord);
+        saveUserRecordStringToDatabase(userRecordString);
     }
 
     /**
@@ -117,16 +246,16 @@ public class UserRecordServiceImpl implements UserRecordService {
      */
     @Override
     public List<Integer> getFansRecordByUid(Integer uid) {
-        String key = "userRecord" + uid;
-        UserRecord userRecord = (UserRecord) redisUtil.zRange(key,0,0).iterator().next();
+        UserRecord userRecord = getUserRecordByUid(uid);
         return userRecord.getFans();
     }
 
     @Override
-    public void setFansRecordByUid(Integer uid) {
-        String key = "userRecord" + uid;
-        UserRecord userRecord = (UserRecord) redisUtil.zRange(key,0,0).iterator().next();
-        int delta = userRecord.getFansNew()-userRecord.getFansOld();
+    public void setFansRecordByUid(Integer uid) throws JsonProcessingException {
+        String key = "userRecord:" + uid;
+        UserRecord userRecord = getUserRecordByUid(uid);
+        redisUtil.zsetDelMember(key,userRecord);
+        int delta = userRecord.getFansNew();
         List<Integer> deltaWeek = new ArrayList<>();
         for(int i=1;i<7;++i){
             deltaWeek.add(userRecord.getFans().get(i));
@@ -136,6 +265,8 @@ public class UserRecordServiceImpl implements UserRecordService {
         userRecord.setFansOld(userRecord.getFansNew());
         userRecord.setFansNew(0);
         redisUtil.zset(key,userRecord);
+        UserRecordString userRecordString = saveUserRecordToString(userRecord);
+        saveUserRecordStringToDatabase(userRecordString);
     }
 
     /**
@@ -145,7 +276,7 @@ public class UserRecordServiceImpl implements UserRecordService {
      * @param uid   用户uid
      */
     @Override
-    public void updateRecordByUid(Integer uid) {
+    public void updateRecordByUid(Integer uid) throws JsonProcessingException {
         setPlayRecordByUid(uid);
         setLoveRecordByUid(uid);
         setCollectRecordByUid(uid);
@@ -158,7 +289,7 @@ public class UserRecordServiceImpl implements UserRecordService {
     @Override
     // 指定在每天的中国时间0:00运行
     @Scheduled(cron = "0 0 0 * * ?", zone = "Asia/Shanghai")
-    public void updateRecord() {
+    public void updateRecord() throws JsonProcessingException {
         List<Integer> userIds = userMapper.getAllUserIds();
         for(Integer uid:userIds){
             updateRecordByUid(uid);

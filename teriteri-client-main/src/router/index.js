@@ -7,6 +7,8 @@ const PlatformUpload = () => import('@/views/platform/children/PlatformUpload.vu
 const PlatformManuscript = () => import('@/views/platform/children/PlatformManuscript.vue')
 const PlatformAppeal = () => import('@/views/platform/children/PlatformAppeal.vue')
 const PlatformData = () => import('@/views/platform/children/PlatformData.vue')
+const PlatformDiagnosis = () => import('@/views/platform/children/PlatformDiagnosis.vue')
+const PlatformManuAnalysis = () => import('@/views/platform/children/PlatformManuAnalysis.vue')
 const PlatformComment = () => import('@/views/platform/children/PlatformComment.vue')
 const PlatformDanmu = () => import('@/views/platform/children/PlatformDanmu.vue')
 const VideoUpload = () => import('@/views/platform/children/uploadChildren/VideoUpload.vue')
@@ -63,6 +65,8 @@ const routes = [
             { path: '/platform/data-up', component: PlatformData, meta: { requestAuth: true } },
             { path: '/platform/comment', component: PlatformComment, meta: { requestAuth: true } },
             { path: '/platform/danmu', component: PlatformDanmu, meta: { requestAuth: true } },
+            { path: '/platform/diagnosis', component: PlatformDiagnosis, meta: {requestAuth: true}},
+            { path: '/platform/manuAnalysis', component:PlatformManuAnalysis, meta: {requestAuth: true} }
         ]
     },
     {

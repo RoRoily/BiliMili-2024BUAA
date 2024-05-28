@@ -380,6 +380,27 @@ CREATE TABLE `follow` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='关注列表';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
+DROP TABLE IF EXISTS `user_record_string`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `user_record_string` (
+    `uid` int(11) NOT NULL COMMENT '用户uid',
+    `play_json` varchar(200) NOT NULL COMMENT '近七天播放量',
+    `play_new` int(11) not null comment '今天的播放量',
+    `play_old` int(11) not null comment '昨天的播放量',
+    `love_json` varchar(200) not null comment '近七天点赞量',
+    `love_new` int(11) not null comment '今天的点赞量',
+    `love_old` int(11) not null comment '昨天的播放量',
+    `collect_json` varchar(200) not null comment '近七天收藏量',
+    `collect_new` int(11) not null comment '今天的收藏量',
+    `collect_old` int(11) not null comment '昨天的收藏量',
+    `fan_json` varchar(200) not null comment '近七天粉丝量',
+    `fans_new` int(11) not null comment '今天的粉丝量',
+    `fans_old` int(11) not null comment '昨天的粉丝量',
+      PRIMARY KEY (`uid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='近七天用户数据统计量';
+/*!40101 SET character_set_client = @saved_cs_client */;
+
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
 /*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;

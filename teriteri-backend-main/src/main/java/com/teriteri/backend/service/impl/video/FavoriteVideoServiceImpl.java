@@ -4,8 +4,10 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.teriteri.backend.mapper.FavoriteMapper;
 import com.teriteri.backend.mapper.FavoriteVideoMapper;
+import com.teriteri.backend.mapper.UserRecordStringMapper;
 import com.teriteri.backend.mapper.VideoMapper;
 import com.teriteri.backend.pojo.*;
+import com.teriteri.backend.service.record.UserRecordService;
 import com.teriteri.backend.service.video.FavoriteVideoService;
 import com.teriteri.backend.utils.RedisUtil;
 import org.apache.ibatis.session.ExecutorType;
@@ -36,6 +38,10 @@ public class FavoriteVideoServiceImpl implements FavoriteVideoService {
 
     @Autowired
     private VideoMapper videoMapper;
+    @Autowired
+    private UserRecordStringMapper userRecordStringMapper;
+    @Autowired
+    private UserRecordService userRecordService;
 
     @Override
     public Set<Integer> findFidsOfCollected(Integer vid, Set<Integer> fids) {
@@ -94,15 +100,26 @@ public class FavoriteVideoServiceImpl implements FavoriteVideoService {
         Integer uidVideo = videoMapper.selectOne(queryWrapper).getUid();
         String key = "userRecord"+uidVideo;
         try{
-            UserRecord userRecord = (UserRecord) redisUtil.zRange(key,0,0).iterator().next();
-            redisUtil.zsetDelMember(key,userRecord);
-            userRecord.setCollectNew(userRecord.getCollectNew()+1);
-            redisUtil.zset(key,userRecord);
+            UserRecord userRecord = (UserRecord) redisUtil.zRange(key,0,-1).iterator().next();
+            if(userRecord == null){
+                QueryWrapper<UserRecordString> queryWrapperUserRecordString = new QueryWrapper<>();
+                queryWrapperUserRecordString.eq("uid", uid);
+                UserRecordString userRecordString = userRecordStringMapper.selectOne(queryWrapperUserRecordString);
+                if(userRecordString != null){
+                    userRecord = userRecordService.findUserRecordByString(userRecordString);
+                }
+            }
+            else redisUtil.zsetDelMember(key,userRecord);
+            if (userRecord != null) {
+                userRecord.setPlayNew(userRecord.getCollectNew()+1);
+                redisUtil.zset(key,userRecord);
+                UserRecordString userRecordString = userRecordService.saveUserRecordToString(userRecord);
+                userRecordService.saveUserRecordStringToDatabase(userRecordString);
+            }
         }catch (Exception e){
             e.printStackTrace();
             new CustomResponse(404,"未找到视频作者的记录",null);
         }
-
     }
 
     @Override
@@ -129,12 +146,24 @@ public class FavoriteVideoServiceImpl implements FavoriteVideoService {
         QueryWrapper<Video> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("vid", vid);
         Integer uidVideo = videoMapper.selectOne(queryWrapper).getUid();
-        String key = "userRecord"+uidVideo;
+        String key = "userRecord:"+uidVideo;
         try{
-            UserRecord userRecord = (UserRecord) redisUtil.zRange(key,0,0).iterator().next();
-            redisUtil.zsetDelMember(key,userRecord);
-            userRecord.setCollectNew(userRecord.getCollectNew()-1);
-            redisUtil.zset(key,userRecord);
+            UserRecord userRecord = (UserRecord) redisUtil.zRange(key,0,-1).iterator().next();
+            if(userRecord == null){
+                QueryWrapper<UserRecordString> queryWrapperUserRecordString = new QueryWrapper<>();
+                queryWrapperUserRecordString.eq("uid", uid);
+                UserRecordString userRecordString = userRecordStringMapper.selectOne(queryWrapperUserRecordString);
+                if(userRecordString != null){
+                    userRecord = userRecordService.findUserRecordByString(userRecordString);
+                }
+            }
+            else redisUtil.zsetDelMember(key,userRecord);
+            if (userRecord != null) {
+                userRecord.setPlayNew(userRecord.getCollectNew()-1);
+                redisUtil.zset(key,userRecord);
+                UserRecordString userRecordString = userRecordService.saveUserRecordToString(userRecord);
+                userRecordService.saveUserRecordStringToDatabase(userRecordString);
+            }
         }catch (Exception e){
             e.printStackTrace();
             new CustomResponse(404,"未找到视频作者的记录",null);

@@ -8,6 +8,7 @@ import com.teriteri.backend.mapper.MsgUnreadMapper;
 import com.teriteri.backend.mapper.UserMapper;
 import com.teriteri.backend.pojo.*;
 import com.teriteri.backend.pojo.dto.UserDTO;
+import com.teriteri.backend.service.record.UserRecordService;
 import com.teriteri.backend.service.user.UserAccountService;
 import com.teriteri.backend.service.user.UserService;
 import com.teriteri.backend.service.utils.CurrentUser;
@@ -68,6 +69,9 @@ public class UserAccountServiceImpl implements UserAccountService {
     @Autowired
     @Qualifier("taskExecutor")
     private Executor taskExecutor;
+
+    @Autowired
+    private UserRecordService userRecordService;
 
     /**
      * 用户注册
@@ -157,23 +161,25 @@ public class UserAccountServiceImpl implements UserAccountService {
                 0,
                 null,
                 now,
-                null,
-                0,
-                0
+                null
         );
         userMapper.insert(new_user);
         msgUnreadMapper.insert(new MsgUnread(new_user.getUid(),0,0,0,0,0,0));
         favoriteMapper.insert(new Favorite(null, new_user.getUid(), 1, 1, null, "默认收藏夹", "", 0, null));
-        esUtil.addUser(new_user);
+        List<Integer> zero=new ArrayList<>();
+        for(int i=0;i<7;++i) zero.add(0);
         UserRecord userRecord = new UserRecord(
                 new_user.getUid(),
-                new ArrayList<>(0), 0,0,
-                new ArrayList<>(0), 0,0,
-                new ArrayList<>(0), 0,0,
-                new ArrayList<>(0), 0,0
+                zero, 0,0,
+                zero, 0,0,
+                zero, 0,0,
+                zero, 0,0
         );
-        String key = "userRecord" + userRecord.getUid();
+        UserRecordString userRecordString = userRecordService.saveUserRecordToString(userRecord);
+        userRecordService.saveUserRecordStringToDatabase(userRecordString);
+        String key = "userRecord:" + userRecord.getUid();
         redisUtil.zset(key,userRecord);
+        esUtil.addUser(new_user);
         customResponse.setMessage("注册成功！欢迎加入T站");
         return customResponse;
     }

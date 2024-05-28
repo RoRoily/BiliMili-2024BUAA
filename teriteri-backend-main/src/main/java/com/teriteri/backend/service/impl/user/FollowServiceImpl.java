@@ -3,11 +3,16 @@ package com.teriteri.backend.service.impl.user;
 import com.alibaba.fastjson2.JSONArray;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.teriteri.backend.mapper.FollowMapper;
+import com.teriteri.backend.mapper.UserRecordStringMapper;
 import com.teriteri.backend.pojo.Favorite;
 import com.teriteri.backend.pojo.Follow;
 import com.teriteri.backend.pojo.UserRecord;
+import com.teriteri.backend.pojo.UserRecordString;
+import com.teriteri.backend.service.record.UserRecordService;
 import com.teriteri.backend.service.user.FollowService;
+import com.teriteri.backend.utils.JsonUtil;
 import com.teriteri.backend.utils.RedisUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -30,6 +35,11 @@ public class FollowServiceImpl implements FollowService {
     @Autowired
     @Qualifier("taskExecutor")
     private Executor taskExecutor;//同步或异步执行器
+
+    @Autowired
+    private UserRecordStringMapper userRecordStringMapper;
+    @Autowired
+    private UserRecordService userRecordService;
     /**
      * 根据是否用户本人获取全部可见的关注列表
      * @param uid   用户ID
@@ -97,20 +107,35 @@ public class FollowServiceImpl implements FollowService {
      * 粉丝id对应的用户，有一个关注ID
      */
     @Override
-    public void addFollow(Integer uidFollow, Integer uidFans){
+    public void addFollow(Integer uidFollow, Integer uidFans) throws JsonProcessingException {
         Follow newFollow = new Follow(uidFollow,uidFans,1);
         followMapper.insert(newFollow);
         String key = "follow:" + uidFollow;
         redisUtil.zset(key,uidFans);
         String key2 = "fans:" + uidFans;
         redisUtil.zset(key2,uidFollow);
-        String key3 = "userRecord" + uidFollow;
+        String key3 = "userRecord:" + uidFollow;
+        UserRecord userRecord = null;
         Set<Object> userRecordSet = redisUtil.zRange(key3, 0, 0);
-        //注意这里
-        UserRecord userRecord = (UserRecord) userRecordSet.iterator().next();
-        redisUtil.zsetDelMember(key3,userRecord);
-        userRecord.setFansNew(userRecord.getFansNew()+1);
-        redisUtil.zset(key3,userRecord);
+        if(userRecordSet!=null&& !userRecordSet.isEmpty()){
+            userRecord = (UserRecord) userRecordSet.iterator().next();
+            redisUtil.zsetDelMember(key3,userRecord);//注意这里
+        }
+        else{
+            QueryWrapper<UserRecordString> queryWrapper = new QueryWrapper<>();
+            queryWrapper.eq("uid",uidFollow);
+            UserRecordString userRecordString = userRecordStringMapper.selectOne(queryWrapper);
+            if(userRecordString!=null){
+                userRecord = userRecordService.findUserRecordByString(userRecordString);
+            }
+        }
+        if (userRecord != null) {
+            userRecord.setFansNew(userRecord.getFansNew()+1);
+            redisUtil.zset(key3,userRecord);
+            UserRecordString userRecordString = userRecordService.saveUserRecordToString(userRecord);
+            userRecordService.saveUserRecordStringToDatabase(userRecordString);
+        }
+
     }
     /**
      * 取关用户
@@ -118,7 +143,7 @@ public class FollowServiceImpl implements FollowService {
      * @param uidFans   被关注者ID
      */
     @Override
-    public void delFollow(Integer uidFollow, Integer uidFans){
+    public void delFollow(Integer uidFollow, Integer uidFans) throws JsonProcessingException {
         QueryWrapper<Follow> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("uidFollow", uidFollow).eq("uidFans", uidFans);
         Follow follow = followMapper.selectOne(queryWrapper);
@@ -128,13 +153,28 @@ public class FollowServiceImpl implements FollowService {
         redisUtil.zsetDelMember(key,uidFans);
         String key2 = "fans:" + uidFans;
         redisUtil.zsetDelMember(key2,uidFollow);
-        String key3 = "userRecord" + uidFollow;
+        String key3 = "userRecord:" + uidFollow;
+        UserRecord userRecord = null;
         Set<Object> userRecordSet = redisUtil.zRange(key3, 0, 0);
         //注意这里
-        UserRecord userRecord = (UserRecord) userRecordSet.iterator().next();
-        redisUtil.zsetDelMember(key3,userRecord);
-        userRecord.setFansNew(userRecord.getFansNew()-1);
-        redisUtil.zset(key3,userRecord);
+        if(userRecordSet!=null&& !userRecordSet.isEmpty()){
+            userRecord = (UserRecord) userRecordSet.iterator().next();
+            redisUtil.zsetDelMember(key3,userRecord);//注意这里
+        }
+        else{
+            QueryWrapper<UserRecordString> queryWrapper1 = new QueryWrapper<>();
+            queryWrapper.eq("uid",uidFollow);
+            UserRecordString userRecordString = userRecordStringMapper.selectOne(queryWrapper1);
+            if(userRecordString!=null){
+                userRecord = userRecordService.findUserRecordByString(userRecordString);
+            }
+        }
+        if (userRecord != null) {
+            userRecord.setFansNew(userRecord.getFansNew()-1);
+            redisUtil.zset(key3,userRecord);
+            UserRecordString userRecordString = userRecordService.saveUserRecordToString(userRecord);
+            userRecordService.saveUserRecordStringToDatabase(userRecordString);
+        }
     }
     /**
      * 更新其他人是否可以查看关注列表

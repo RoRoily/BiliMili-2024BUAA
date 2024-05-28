@@ -33,7 +33,4 @@ public class User {
     private Date createDate;
 //    @JsonFormat(pattern = "yyyy-MM-dd HH:mm", timezone = "Asia/Shanghai")
     private Date deleteDate;
-
-    private Integer fansNumberOld; // 我上周关注的人
-    private Integer fansNumOld;//关注我的人
 }

@@ -1,5 +1,6 @@
 package com.teriteri.backend.service.user;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.teriteri.backend.pojo.Favorite;
 import com.teriteri.backend.pojo.Follow;
 
@@ -29,7 +30,7 @@ public interface FollowService {
      * 粉丝id对应的用户，有一个关注ID
      */
 
-    void addFollow(Integer uidFollow,Integer uidFans);
+    void addFollow(Integer uidFollow,Integer uidFans) throws JsonProcessingException;
 
     /**
      * 取关用户
@@ -37,7 +38,7 @@ public interface FollowService {
      * @param uidFans   被关注者ID
      */
 
-    void delFollow(Integer uidFollow, Integer uidFans);
+    void delFollow(Integer uidFollow, Integer uidFans) throws JsonProcessingException;
 
     /**
      * 更新其他人是否可以查看关注列表

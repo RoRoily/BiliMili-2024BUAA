@@ -1,5 +1,6 @@
 package com.teriteri.backend.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.teriteri.backend.pojo.CustomResponse;
 import com.teriteri.backend.service.user.FollowService;
 import com.teriteri.backend.service.utils.CurrentUser;
@@ -52,7 +53,7 @@ public class FollowController {
      * @return  包含关注列表的响应对象
      */
     @PostMapping("/follow/follow-one/")
-    public CustomResponse addFollowing(@RequestParam("uidFollow") Integer uidFollow) {
+    public CustomResponse addFollowing(@RequestParam("uidFollow") Integer uidFollow) throws JsonProcessingException {
         Integer loginUid = currentUser.getUserId();
         CustomResponse customResponse = new CustomResponse();
         followService.addFollow(uidFollow, loginUid);
@@ -65,7 +66,7 @@ public class FollowController {
      * @return  包含关注列表的响应对象
      */
     @PostMapping("/follow/delFollow-one/")
-    public CustomResponse delFollowing(@RequestParam("uidFollow") Integer uidFollow) {
+    public CustomResponse delFollowing(@RequestParam("uidFollow") Integer uidFollow) throws JsonProcessingException {
         Integer loginUid = currentUser.getUserId();
         CustomResponse customResponse = new CustomResponse();
         followService.delFollow(uidFollow, loginUid);

@@ -5,8 +5,32 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="aa7e2d3b-8a77-4a76-a97e-eec23680149e" name="更改" comment="v0.0.1">
-      <change afterPath="$PROJECT_DIR$/teriteri-backend-main/src/main/resources/log4j.properties" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/sqldialects.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/teriteri-backend-main/src/main/java/com/teriteri/backend/mapper/UserRecordStringMapper.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/teriteri-backend-main/src/main/java/com/teriteri/backend/pojo/UserRecordString.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/teriteri-backend-main/src/main/java/com/teriteri/backend/utils/JsonUtil.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/teriteri-client-main/src/views/platform/children/PlatformDiagnosis.vue" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/teriteri-client-main/src/views/platform/children/PlatformManuAnalysis.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources.local.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.local.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/c5b91554-be69-49df-9157-81e97eb4a052.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/c5b91554-be69-49df-9157-81e97eb4a052.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/teriteri-backend-main/database/teriteri.sql" beforeDir="false" afterPath="$PROJECT_DIR$/teriteri-backend-main/database/teriteri.sql" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/teriteri-backend-main/src/main/java/com/teriteri/backend/config/SecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/teriteri-backend-main/src/main/java/com/teriteri/backend/config/SecurityConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/teriteri-backend-main/src/main/java/com/teriteri/backend/controller/FollowController.java" beforeDir="false" afterPath="$PROJECT_DIR$/teriteri-backend-main/src/main/java/com/teriteri/backend/controller/FollowController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/teriteri-backend-main/src/main/java/com/teriteri/backend/controller/UserRecordController.java" beforeDir="false" afterPath="$PROJECT_DIR$/teriteri-backend-main/src/main/java/com/teriteri/backend/controller/UserRecordController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/teriteri-backend-main/src/main/java/com/teriteri/backend/pojo/User.java" beforeDir="false" afterPath="$PROJECT_DIR$/teriteri-backend-main/src/main/java/com/teriteri/backend/pojo/User.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/teriteri-backend-main/src/main/java/com/teriteri/backend/pojo/dto/UserDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/teriteri-backend-main/src/main/java/com/teriteri/backend/pojo/dto/UserDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/teriteri-backend-main/src/main/java/com/teriteri/backend/service/impl/record/UserRecordServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/teriteri-backend-main/src/main/java/com/teriteri/backend/service/impl/record/UserRecordServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/teriteri-backend-main/src/main/java/com/teriteri/backend/service/impl/user/FollowServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/teriteri-backend-main/src/main/java/com/teriteri/backend/service/impl/user/FollowServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/teriteri-backend-main/src/main/java/com/teriteri/backend/service/impl/user/UserAccountServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/teriteri-backend-main/src/main/java/com/teriteri/backend/service/impl/user/UserAccountServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/teriteri-backend-main/src/main/java/com/teriteri/backend/service/impl/user/UserServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/teriteri-backend-main/src/main/java/com/teriteri/backend/service/impl/user/UserServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/teriteri-backend-main/src/main/java/com/teriteri/backend/service/impl/video/FavoriteVideoServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/teriteri-backend-main/src/main/java/com/teriteri/backend/service/impl/video/FavoriteVideoServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/teriteri-backend-main/src/main/java/com/teriteri/backend/service/impl/video/VideoStatsServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/teriteri-backend-main/src/main/java/com/teriteri/backend/service/impl/video/VideoStatsServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/teriteri-backend-main/src/main/java/com/teriteri/backend/service/record/UserRecordService.java" beforeDir="false" afterPath="$PROJECT_DIR$/teriteri-backend-main/src/main/java/com/teriteri/backend/service/record/UserRecordService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/teriteri-backend-main/src/main/java/com/teriteri/backend/service/user/FollowService.java" beforeDir="false" afterPath="$PROJECT_DIR$/teriteri-backend-main/src/main/java/com/teriteri/backend/service/user/FollowService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/teriteri-client-main/src/router/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/teriteri-client-main/src/router/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/teriteri-client-main/src/views/platform/children/PlatformData.vue" beforeDir="false" afterPath="$PROJECT_DIR$/teriteri-client-main/src/views/platform/children/PlatformData.vue" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -16,8 +40,8 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
-        <option value="Interface" />
         <option value="Class" />
+        <option value="Interface" />
       </list>
     </option>
   </component>
@@ -50,9 +74,14 @@
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
     "ASKED_ADD_EXTERNAL_FILES": "true",
+    "RequestMappingsPanelOrder0": "0",
+    "RequestMappingsPanelOrder1": "1",
+    "RequestMappingsPanelWidth0": "75",
+    "RequestMappingsPanelWidth1": "75",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "SHARE_PROJECT_CONFIGURATION_FILES": "true",
     "Spring Boot.BackendApplication.executor": "Run",
+    "extract.method.default.visibility": "public",
     "git-widget-placeholder": "pxy",
     "kotlin-language-version-configured": "true",
     "last_opened_file_path": "D:/ziliao/软件工程基础/实验/teriteri",
@@ -97,7 +126,8 @@
       <workItem from="1716811257132" duration="1264000" />
       <workItem from="1716812694637" duration="5086000" />
       <workItem from="1716817836323" duration="7043000" />
-      <workItem from="1716862152176" duration="2147000" />
+      <workItem from="1716862152176" duration="7950000" />
+      <workItem from="1716885261364" duration="18619000" />
     </task>
     <task id="LOCAL-00001" summary="v0.0.1">
       <option name="closed" value="true" />
@@ -147,7 +177,15 @@
       <option name="project" value="LOCAL" />
       <updated>1716863685610</updated>
     </task>
-    <option name="localTasksCounter" value="7" />
+    <task id="LOCAL-00007" summary="v0.0.1">
+      <option name="closed" value="true" />
+      <created>1716864322496</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1716864322496</updated>
+    </task>
+    <option name="localTasksCounter" value="8" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">

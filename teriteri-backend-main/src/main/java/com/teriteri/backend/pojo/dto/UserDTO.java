@@ -25,7 +25,4 @@ public class UserDTO {
     private Integer fansCount;  // 粉丝数
     private Integer loveCount;  // 获赞数
     private Integer playCount;  // 播放数
-
-    private Integer fansNumberOld; // 我上周关注的人
-    private Integer fansNumOld;//关注我的人
 }
