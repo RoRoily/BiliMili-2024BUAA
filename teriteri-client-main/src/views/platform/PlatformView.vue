@@ -36,10 +36,10 @@
                             </div>
                         </template>
                     </VPopover>
-                    <a class="tips" href="/platform/data-up">
+                    <div class="tips">
                         成为UP主的第1145天
                         <i class="iconfont icon-youjiantou"></i>
-                    </a>
+                    </div>
                     <div class="line-divid"></div>
                     <VPopover pop-style="padding-top: 10px;">
                         <template #reference>
@@ -213,7 +213,7 @@ export default {
     left: 0;
     right: 0;
     height: 60px;
-    z-index: 1600;  /* 保证在mavon-editor之上 */
+    z-index: 900;
     min-width: 960px;
 }
 
@@ -430,9 +430,9 @@ export default {
     left: 0;
     border-right: 1px solid #f4f4f4;
     background: #fff;
+    z-index: 10;
     height: 100%;
     width: 200px;
-    z-index: 1550;
     overflow-x: hidden;
     overflow-y: auto;
     font-family: PingFangSC-Regular,Microsoft YaHei,Arial,Helvetica,sans-serif;
@@ -489,6 +489,8 @@ export default {
     min-height: calc(100vh - 126px);
     background: #fff;
     margin: 16px 72px 0;
+    border-radius: 30px 30px 0 0;
+    border-bottom: 4px solid var(--Lb2);
     padding-bottom: 20px;
     display: flow-root;
 }

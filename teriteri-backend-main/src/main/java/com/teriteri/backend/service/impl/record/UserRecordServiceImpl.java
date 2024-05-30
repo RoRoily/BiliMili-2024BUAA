@@ -20,6 +20,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @Slf4j
 @Service
@@ -120,28 +121,32 @@ public class UserRecordServiceImpl implements UserRecordService {
         String key = "userRecord:" + uid;
         UserRecord userRecord = null;
         try{
-            userRecord = (UserRecord) redisUtil.zRange(key,0,-1).iterator().next();
-            if(userRecord == null){
+            Set<Object> userRecordSet = redisUtil.zRange(key,0,-1);
+            if(userRecordSet!=null && !userRecordSet.isEmpty()){
+                userRecord = (UserRecord) userRecordSet.iterator().next();
+            }
+            if(userRecord==null){
                 QueryWrapper<UserRecordString> queryWrapperUserRecordString = new QueryWrapper<>();
                 queryWrapperUserRecordString.eq("uid", uid);
                 UserRecordString userRecordString = userRecordStringMapper.selectOne(queryWrapperUserRecordString);
                 if(userRecordString != null){
-                    redisUtil.zset(key,userRecord);
+                    System.out.println("breakpoint 0");
                     userRecord = findUserRecordByString(userRecordString);
+                    redisUtil.zset(key,userRecord);
                 }
             }
         }catch (Exception e){
             e.printStackTrace();
             new CustomResponse(404,"未找到记录",null);
         }
-        if(userRecord == null){
+        /*if(userRecord == null){
             try{
                 Exception e = new Exception("点赞量为空");
             }catch (Exception e){
                 e.printStackTrace();
             }
             return null;
-        }
+        }*/
         return userRecord;
     }
 

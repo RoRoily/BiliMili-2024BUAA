@@ -7,31 +7,28 @@
       </div>
       <div class="container">
         <div class="box-text">
-          <div class="info" style="color: #FF0066">核心数据</div>
+          <div class="info">核心数据</div>
         </div>
-        <div class="box" @mouseover="highlight(1)" @mouseleave="removeHighlight(1)">
-          <span v-if="highlighted === 1"></span>
-          <div class="text">播放量</div>
-          <div class="text-data" style="margin-top:50px;">{{handleNum(viewSum)}}</div>
+        <div class="box" @mouseover="handleMouseOver(1)" @mouseout="handleMouseOut(1)">
+          <div class="text" :style="{color: textColor(1)}">播放量</div>
+          <div class="text-data" :style="{color: textDataColor(1)}">{{handleNum(viewSum)}}</div>
         </div>
-        <div class="box" @mouseover="highlight(1)" @mouseleave="removeHighlight(1)">
-          <span v-if="highlighted === 1"></span>
-          <div class="text">获赞量</div>
-          <div class="text-data" style="margin-top:50px;">{{handleNum(likeSum)}}</div>
+        <div class="box" @mouseover="handleMouseOver(2)" @mouseout="handleMouseOut(2)">
+          <div class="text" :style="{color: textColor(2)}">获赞量</div>
+          <div class="text-data" :style="{color: textDataColor(2)}">{{handleNum(likeSum)}}</div>
         </div>
-        <div class="box" @mouseover="highlight(1)" @mouseleave="removeHighlight(1)">
-          <span v-if="highlighted === 1"></span>
-          <div class="text">收藏量</div>
-          <div class="text-data" style="margin-top:50px;">{{handleNum(favoriteSum)}}</div>
+        <div class="box" @mouseover="handleMouseOver(3)" @mouseout="handleMouseOut(3)">
+          <div class="text" :style="{color: textColor(3)}">收藏量</div>
+          <div class="text-data" :style="{color: textDataColor(3)}">{{handleNum(favoriteSum)}}</div>
         </div>
-        <div class="box" @mouseover="highlight(1)" @mouseleave="removeHighlight(1)">
-          <span v-if="highlighted === 1"></span>
-          <div class="text">关注量</div>
-          <div class="text-data" style="margin-top:50px;">{{handleNum(followSum)}}</div>
+        <div class="box" @mouseover="handleMouseOver(4)" @mouseout="handleMouseOut(4)">
+          <div class="text" :style="{color: textColor(4)}">关注量</div>
+          <div class="text-data" :style="{color: textDataColor(4)}">{{handleNum(followSum)}}</div>
         </div>
       </div>
-      <div class="line"></div>
-      <div ref="chart" style="width: 100%; height: 500px; margin-top: 50px"></div>
+      <div class="chart-background">
+        <div ref="chart" style="width: 100%; height: 500px; margin-top: 50px"></div>
+      </div>
     </div>
 </template>
 
@@ -51,10 +48,22 @@ export default{
       favorite: [],
       follow: [],
       view: [],
-      like: []
+      like: [],
+      isHovered: {
+        1: false,
+        2: false,
+        3: false,
+        4: false
+      }
     };
   },
   methods: {
+    handleMouseOver(num) {
+      this.isHovered[num] = true;
+    },
+    handleMouseOut(num) {
+      this.isHovered[num] = false;
+    },
     async getData() {
       const res = await this.$get('/user_record', {
         params: { uid: this.$store.state.user.uid },
@@ -124,7 +133,7 @@ export default{
             type: 'line',
             data: data.views,
             itemStyle: {
-              color: '#FF0066',
+              color: '#001627',
               borderWidth: 10
             }
           },
@@ -133,7 +142,7 @@ export default{
             type: 'line',
             data: data.favorites,
             itemStyle: {
-              color: '#FF69B4',
+              color: '#004B76',
               borderWidth: 10
             }
           },
@@ -142,7 +151,7 @@ export default{
             type: 'line',
             data: data.follows,
             itemStyle: {
-              color: '#FF8CA0',
+              color: '#008AC5',
               borderWidth: 10
             }
           },
@@ -151,7 +160,7 @@ export default{
             type: 'line',
             data: data.likes,
             itemStyle: {
-              color: '#FFB6AF',
+              color: '#40C5F1',
               borderWidth: 10
             }
           }
@@ -162,7 +171,7 @@ export default{
 
       myChart.on('mousemove', params => {
         const pointInPixel = [params.offsetX, params.offsetY];
-        const pointInGrid = this.myChart.convertFromPixel('grid', pointInPixel);
+        const pointInGrid = myChart.convertFromPixel('grid', pointInPixel);
         const dataIndex = Math.round(pointInGrid[0]);
         const value = [];
         myChart.getOption().series.forEach(series => {
@@ -186,14 +195,6 @@ export default{
     },
     handleNum(number) {
       return handleNum(number);
-    },
-    highlight(boxNumber) {
-      this.highlighted = boxNumber;
-    },
-    removeHighlight(boxNumber) {
-      if (this.highlighted === boxNumber) {
-        this.highlighted = null;
-      }
     }
   },
   async created() {
@@ -201,6 +202,18 @@ export default{
     this.calculateTotals();
     this.drawChart();
   },
+  computed: {
+    textColor() {
+      return (num) => {
+        return this.isHovered[num] ? 'white' : '#61666D';
+      }
+    },
+    textDataColor() {
+      return (num) => {
+        return this.isHovered[num] ? 'white' : 'black';
+      }
+    }
+  }
 };
 </script>
 
@@ -217,23 +230,28 @@ export default{
   height: 25vh;
 }
 .text {
-  text-align-last:justify;
-  padding-right:80px;
-  margin-top:1px;
+  //text-align-last:justify;
+  padding-right:110px;
+  margin-top:5px;
   text-align: left;
-  color: black;
-  font-size:25px;
+  color: var(--Ga7);
+  font-size: 18px;
+  font-weight: bold;
 }
 .text-data {
+  padding-right:123px;
   margin-top: 10px;
-  text-align: center;
-  color: white;
-  font-size:30px;
+  text-align: left;
+  margin-bottom: 15px;
+  font-stretch: extra-condensed;
+  font-weight: bold;
+  color: black;
+  font-size:20px;
 }
 .box {
   width: 200px;
-  height: 150px;
-  background-color: darkgray;
+  height: 100px;
+  background-color: var(--Ga1);
   border-radius: 20px;
   display: flex;
   justify-content: center;
@@ -245,18 +263,22 @@ export default{
   transition: background-color 0.3s ease;
 }
 .box:hover {
-  background-color: pink;
+  background-color: var(--Lb5);
 }
 .box-text {
-  width: 100px;
-  height: 100px;
+  width: 120px;
+  height: 150px;
   display: flex;
   background-color: white;
-  margin-top:45px;
-  margin-right:130px;
-  font-size: 25px;
-  justify-content: center;
+  margin-top:-6px;
+  margin-right:100px;
+  justify-content: space-around;
   align-items: center;
+}
+.info {
+  color: black;
+  font-weight: bold;
+  font-size: 30px;
 }
 @keyframes jump {
   0%, 100% {
@@ -269,7 +291,7 @@ export default{
 .navbar {
   display: flex;
   justify-content: space-around;
-  margin-bottom: 20px;
+  margin-bottom: 40px;
   border-radius: 30px 30px 0 0;
   width: 100%;
   padding: 20px 0;
@@ -289,9 +311,13 @@ export default{
   cursor: pointer;
   font-size:20px;
 }
-.line {
-  margin: 0 auto;
-  border-top: 3px solid darkgray; /* 直线样式 */
-  width: 80%; /* 直线宽度占满页面 */
+.chart-background {
+  display: flex;
+  background-color: white;
+  justify-content: center;
+  border-top-left-radius: 40px;
+  border-top-right-radius: 40px;
+  border-top: 4px solid var(--Lb2);
+  margin-top: -40px;
 }
 </style>
