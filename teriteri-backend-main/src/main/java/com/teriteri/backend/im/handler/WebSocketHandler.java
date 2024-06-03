@@ -5,6 +5,8 @@ import com.teriteri.backend.im.IMServer;
 import com.teriteri.backend.pojo.Command;
 import com.teriteri.backend.pojo.CommandType;
 import com.teriteri.backend.pojo.IMResponse;
+import com.teriteri.backend.service.impl.user.FollowServiceImpl;
+import com.teriteri.backend.service.user.FollowService;
 import com.teriteri.backend.utils.RedisUtil;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
@@ -15,8 +17,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.Set;
 
+
+//该方法在接收到新的 WebSocket 文本帧时被调用。
+// ChannelHandlerContext 用于处理管道中的上下文，TextWebSocketFrame 是接收到的文本帧。
 @Slf4j
 @Component
 public class WebSocketHandler extends SimpleChannelInboundHandler<TextWebSocketFrame> {
@@ -24,16 +30,20 @@ public class WebSocketHandler extends SimpleChannelInboundHandler<TextWebSocketF
     private static RedisUtil redisUtil;
 
     @Autowired
-    public void setDependencies(RedisUtil redisUtil) {
+    private static FollowService followService;
+    @Autowired
+    public void setDependencies(RedisUtil redisUtil, FollowService followService) {
         WebSocketHandler.redisUtil = redisUtil;
+        //WebSocketHandler.followS
     }
+
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, TextWebSocketFrame tx) {
-
+        // 将接收到的文本帧内容解析为 Command 对象。
+        // 当 Netty 接收到一个 WebSocket 文本帧时会调用这个方法进行处理
         try {
             Command command = JSON.parseObject(tx.text(), Command.class);
-//            System.out.println("command: " + command);
             // 根据code分发不同处理程序
             switch (CommandType.match(command.getCode())) {
                 case CONNETION: // 如果是连接消息就不需要做任何操作了，因为连接上的话在token鉴权那就做了
@@ -43,6 +53,9 @@ public class WebSocketHandler extends SimpleChannelInboundHandler<TextWebSocketF
                     break;
                 case CHAT_WITHDRAW:
                     ChatHandler.withdraw(ctx, tx);
+                    break;
+                case NOTICE:
+                    NoticeHandler.send(ctx,tx);
                     break;
                 default: ctx.channel().writeAndFlush(IMResponse.error("不支持的CODE " + command.getCode()));
             }

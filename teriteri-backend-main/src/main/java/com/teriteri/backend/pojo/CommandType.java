@@ -21,6 +21,11 @@ public enum CommandType {
      */
     CHAT_WITHDRAW(102),
 
+    /**
+     * 消息
+     */
+    NOTICE(188),
+
     ERROR(-1),
     ;
 

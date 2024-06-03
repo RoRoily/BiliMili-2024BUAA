@@ -112,7 +112,8 @@ public class SecurityConfig {
                                 "/video/user-works",
                                 "/video/user-love",
                                 "/video/user-collect",
-                                "/user_record").permitAll()
+                                "/user_record",
+                                "/fans/get-all/userTest").permitAll()
                         // 允许HTTP OPTIONS请求
                         .antMatchers(HttpMethod.OPTIONS).permitAll()
                         // 其他地址的访问均需验证权限

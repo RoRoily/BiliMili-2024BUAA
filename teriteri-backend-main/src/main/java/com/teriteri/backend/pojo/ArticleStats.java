@@ -11,10 +11,8 @@ import lombok.NoArgsConstructor;
 public class ArticleStats {
     @TableId
     private Integer uid;
-
     private Integer aid;
     private Integer play;
-    private Integer danmu;
     private Integer good;
     private Integer bad;
     private Integer coin;

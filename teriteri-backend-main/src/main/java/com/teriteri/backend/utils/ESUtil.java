@@ -242,16 +242,43 @@ public class ESUtil {
     }
 
     /**
+     * 添加专栏文档
+     * @param article
+     */
+    public void addArticle(Article article) throws IOException {
+        try {
+            ESArticle esArticle = new ESArticle(article.getAid(), article.getUid(), article.getStatus(), article.getTitle());
+            client.index(i -> i.index("article").id(esArticle.getAid().toString()).document(esArticle));
+        } catch (IOException e) {
+            log.error("添加专栏文档到ElasticSearch时出错了：" + e);
+            throw e;
+        }
+    }
+
+    /**
      * 更新专栏文档
      * @param article   专栏
      */
 
     public void updateArticle(Article article) throws IOException {
         try {
-            ESArticle esArticle = new ESArticle(article.getAid(), article.getUid(), article.getTitle(), article.getMcId(), article.getScId(), article.getTags(), article.getStatus());
+            ESArticle esArticle = new ESArticle(article.getAid(), article.getUid(), article.getStatus(), article.getTitle());
             client.update(u -> u.index("article").id(article.getAid().toString()).doc(esArticle), ESArticle.class);
         } catch (IOException e) {
             log.error("更新ElasticSearch专栏文档时出错了：" + e);
+            throw e;
+        }
+    }
+
+    /**
+     * 删除专栏文档
+     * @param aid
+     */
+    public void deleteArticle(Integer aid) throws IOException {
+        try {
+            client.delete(d -> d.index("article").id(aid.toString()));
+        } catch (IOException e) {
+            log.error("删除ElasticSearch专栏文档时失败了：" + e);
             throw e;
         }
     }

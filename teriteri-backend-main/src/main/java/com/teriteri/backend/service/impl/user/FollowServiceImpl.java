@@ -83,13 +83,17 @@ public class FollowServiceImpl implements FollowService {
     @Override
     public List<Integer> getUidFans(Integer uid, boolean isOwner){
         String key = "follow:" + uid;   // uid用户的粉丝列表，uid是up
-        Set<Object>fans = redisUtil.zRange(key, 0, -1);
-        List<Integer> list = fans.stream().map(obj -> Integer.parseInt(obj.toString())).collect(Collectors.toList());
-        if (!list.isEmpty())   {
-            /*待实现是否根据用户本人来看*/
-            return list;
+        /*Set<Object>fans = redisUtil.zRange(key, 0, -1);
+        List<Integer> list = null;
+        if(!fans.isEmpty())   {
+           list = fans.stream().map(obj -> Integer.parseInt(obj.toString())).collect(Collectors.toList());
         }
-        list = followMapper.getUidFansByUid(uid);
+
+        if (list!=null && !list.isEmpty())   {
+            *//*待实现是否根据用户本人来看*//*
+            return list;
+        }*/
+        List<Integer> list = followMapper.getUidFansByUid(uid);
         List<Integer> finalList = list;
         if(list!=null&& !list.isEmpty()){
             CompletableFuture.runAsync(() -> {
@@ -186,5 +190,20 @@ public class FollowServiceImpl implements FollowService {
         UpdateWrapper<Follow> followUpdateWrapper = new UpdateWrapper<>();
         followUpdateWrapper.eq("uid", uid);
         followUpdateWrapper.set("visible", visible);
+    }
+
+    /**
+     * 检查该用户是否被关注
+     * @param uidFollow   关注者ID
+     * @param uidFans   粉丝ID
+     * 关注者id对应的用户，有一个粉丝ID
+     * 粉丝id对应的用户，有一个关注ID
+     */
+    @Override
+    public boolean isHisFans(Integer uidFollow,Integer uidFans){
+        QueryWrapper<Follow> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("uidFollow", uidFollow).eq("uidFans", uidFans);
+        Follow follow = followMapper.selectOne(queryWrapper);
+        return follow != null;
     }
 }

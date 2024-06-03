@@ -134,7 +134,7 @@ public class DirectVideoUploadConsumer {
         );
         videoMapper.insert(video);
 
-        VideoStats videoStats = new VideoStats(video.getVid(),0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0);
+        VideoStats videoStats = new VideoStats(video.getVid(),0,0,0,0,0,0,0,0);
         videoStatsMapper.insert(videoStats);
         esUtil.addVideo(video);
         CompletableFuture.runAsync(() -> redisUtil.setExObjectValue("video:" + video.getVid(), video), taskExecutor);

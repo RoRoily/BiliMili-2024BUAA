@@ -1,5 +1,6 @@
 package com.teriteri.backend.pojo;
 
+import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -11,6 +12,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class UserRecord {
+    @TableId
     private Integer uid;
     private List<Integer> play;
     private Integer playNew;//今天的新播放量

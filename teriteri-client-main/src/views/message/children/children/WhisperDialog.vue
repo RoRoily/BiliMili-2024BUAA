@@ -43,6 +43,7 @@
             </div>
             <div class="row right">
                 <button class="btn-box send-btn" @click="sendMsg" :title="`enter 发送\nshift + enter 换行`">发送</button>
+              <button class="btn-box send-btn" @click="sendMsgToFans" :title="`enter 发送\nshift + enter 换行`">24发送</button>
             </div>
         </div>
     </div>
@@ -135,6 +136,34 @@ export default {
             this.$refs.editor.innerHTML = '';
             this.input = "";
         },
+
+      // 发送消息到粉丝
+      sendMsgToFans() {
+        if (this.user.uid === this.$store.state.user.uid) {
+          ElMessage.error("不能给自己发消息哦~");
+          return;
+        }
+        if (this.input.length > 500) {
+          ElMessage.error("字数超过限制");
+          return;
+        } else if (this.input.length === 0) {
+          ElMessage.error("随便说点吧");
+          return;
+        }
+        if (!this.$store.state.ws) {
+          ElMessage.error("服务已断开，请刷新后尝试");
+          return;
+        }
+        const msg = {
+          code: 188,
+          anotherId: this.user.uid,
+          content: this.input,
+        }
+        this.$store.state.ws.send(JSON.stringify(msg));
+        // 清空文本
+        this.$refs.editor.innerHTML = '';
+        this.input = "";
+      },
 
 
         ///////// 事件 /////////

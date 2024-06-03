@@ -32,12 +32,21 @@ public class FollowController {
         return customResponse;
     }
     /**
+     * 测试
+     */
+    @GetMapping("/fans/get-all/userTest")
+    public CustomResponse getAllFansForUserTest(@RequestParam("uid") Integer uid) {
+        CustomResponse customResponse = new CustomResponse();
+        customResponse.setData(followService.getUidFans(uid, true));
+        return customResponse;
+    }
+    /**
      * 站内用户请求某个用户的粉丝列表（需要jwt鉴权）
      * @param uid   被查看的用户ID
      * @return  包含关注列表的响应对象
      */
-    @GetMapping("/followed/get-all/user")
-    public CustomResponse getAllFollowedForUser(@RequestParam("uid") Integer uid) {
+    @GetMapping("/fans/get-all/user")
+    public CustomResponse getAllFansForUser(@RequestParam("uid") Integer uid) {
         Integer loginUid = currentUser.getUserId();
         CustomResponse customResponse = new CustomResponse();
         if (Objects.equals(loginUid, uid)) {
@@ -85,5 +94,34 @@ public class FollowController {
         followService.updateVisible(loginUid, visible);
         customResponse.setMessage("更新权限成功");
         return customResponse;
+    }
+
+    /**
+     * 查询用户是否关注了另一个用户
+     * @param uidFollow   被关注者
+     * @param uidFans   粉丝ID
+     * @return  包含关注列表的响应对象
+     */
+    @GetMapping("/followed/checkRelation")
+    public CustomResponse getIsHisFans(@RequestParam("uidFollow") Integer uidFollow,
+                                                @RequestParam("uidFans") Integer uidFans) {
+        try{
+            CustomResponse customResponse = new CustomResponse();
+            boolean flag = followService.isHisFans(uidFollow,uidFans);
+            if(flag){
+                customResponse.setCode(200);
+                customResponse.setMessage("查询成功，是该up主的粉丝");
+            }
+            if(flag){
+                customResponse.setCode(200);
+                customResponse.setMessage("查询成功，不是该up主的粉丝");
+            }
+            customResponse.setData(flag);
+            return customResponse;}
+        catch (Exception e) {
+            e.printStackTrace();
+            return new CustomResponse(500, "查询粉丝关系操作失败", null);
+        }
+
     }
 }

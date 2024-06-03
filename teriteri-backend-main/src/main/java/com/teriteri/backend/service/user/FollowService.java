@@ -46,4 +46,13 @@ public interface FollowService {
      * @param visible   能否查看,1可以，0不可以
      */
     void updateVisible(Integer uid, Integer visible);
+
+    /**
+     * 检查该用户是否被关注
+     * @param uidFollow   关注者ID
+     * @param uidFans   粉丝ID
+     * 关注者id对应的用户，有一个粉丝ID
+     * 粉丝id对应的用户，有一个关注ID
+     */
+    boolean isHisFans(Integer uidFollow,Integer uidFans);
 }

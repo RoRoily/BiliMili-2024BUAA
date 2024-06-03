@@ -13,19 +13,19 @@ public class VideoStats {
     @TableId
     private Integer vid;
     private Integer play;
-    private Integer oldPlay;
+    //private Integer oldPlay;
     private Integer danmu;
-    private Integer oldDanmu;
+    //private Integer oldDanmu;
     private Integer good;
-    private Integer oldGood;
+    //private Integer oldGood;
     private Integer bad;
-    private Integer oldBad;
+    //private Integer oldBad;
     private Integer coin;
-    private Integer oldCoin;
+    //private Integer oldCoin;
     private Integer collect;
-    private Integer oldCollect;
+    //private Integer oldCollect;
     private Integer share;
-    private Integer oldShare;
+    //private Integer oldShare;
     private Integer comment;
-    private Integer oldComment;
+    //private Integer oldComment;
 }

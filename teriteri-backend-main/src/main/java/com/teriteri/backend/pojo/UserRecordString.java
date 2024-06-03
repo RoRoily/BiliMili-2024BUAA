@@ -1,5 +1,6 @@
 package com.teriteri.backend.pojo;
 
+import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -8,6 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class UserRecordString {//近七天用户数据统计量
+    @TableId
     private Integer uid;//用户uid
     private String playJson;//用户近七天播放量，为了方便存储数据库，采用JSON字符串格式
     private Integer playNew;//今天的新播放量

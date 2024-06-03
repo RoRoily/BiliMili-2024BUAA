@@ -10,9 +10,6 @@ import lombok.NoArgsConstructor;
 public class ESArticle {
     private Integer aid;
     private Integer uid;
-    private String title;
-    private String mc_id;
-    private String sc_id;
-    private String tags;
     private Integer status;
+    private String title;
 }

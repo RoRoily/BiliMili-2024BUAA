@@ -1,141 +1,117 @@
 package com.teriteri.backend.service.impl.article;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.teriteri.backend.mapper.ArticleStatsMapper;
+import com.teriteri.backend.mapper.ArticleMapper;
 import com.teriteri.backend.pojo.*;
 import com.teriteri.backend.service.article.ArticleService;
-import com.teriteri.backend.service.article.ArticleStatsService;
-import com.teriteri.backend.utils.OssUtil;
-import org.jetbrains.annotations.Nullable;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
 
-import java.io.IOException;
 import java.util.HashMap;
-import java.util.List;
-import com.teriteri.backend.utils.RedisUtil;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
-import com.teriteri.backend.pojo.CustomResponse;
-import com.teriteri.backend.pojo.Video;
-import com.teriteri.backend.mapper.ArticleMapper;
+import com.teriteri.backend.mapper.VideoMapper;
+import com.teriteri.backend.mapper.VideoStatsMapper;
 import com.teriteri.backend.service.category.CategoryService;
 import com.teriteri.backend.service.user.UserService;
 import com.teriteri.backend.service.utils.CurrentUser;
+import com.teriteri.backend.service.video.VideoStatsService;
 import com.teriteri.backend.utils.ESUtil;
-
-import lombok.extern.slf4j.Slf4j;
+import com.teriteri.backend.utils.OssUtil;
+import com.teriteri.backend.utils.RedisUtil;
+import org.apache.ibatis.session.SqlSessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Service;
 
-
+import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.Executor;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 
 @Slf4j
 @Service
-public class ArticleServiceImpl implements ArticleService  {
+public class ArticleServiceImpl implements ArticleService {
+
 
 
     @Autowired
-    @Qualifier("taskExecutor")
-    private Executor taskExecutor;
+    private VideoMapper videoMapper;
+
+    @Autowired
+    private VideoStatsMapper videoStatsMapper;
 
     @Autowired
     private UserService userService;
 
     @Autowired
-    private ArticleMapper articleMapper;
-
-    @Autowired
     private CategoryService categoryService;
 
-
     @Autowired
-    private ArticleStatsMapper articleStatsMapper;
-
-    @Autowired
-    private ArticleStatsService articleStatsService;
-
-    @Autowired
-    private RedisUtil redisUtil;
+    private VideoStatsService videoStatsService;
 
     @Autowired
     private CurrentUser currentUser;
 
     @Autowired
-    private ESUtil esUtil;
+    private ArticleMapper articleMapper;
+
+    @Autowired
+    private RedisUtil redisUtil;
+
     @Autowired
     private OssUtil ossUtil;
-    @Override
-    public List<Map<String, Object>> getArticlesWithDataByIds(Set<Object> set, Integer index, Integer quantity) {
-        return null;
-    }
 
-    @Override
-    public List<Map<String, Object>> getArticlesWithDataByIdsOrderByDesc(List<Integer> idList, @Nullable String column, Integer page, Integer quantity) {
-        return null;
-    }
+    @Autowired
+    private ESUtil esUtil;
 
+    @Autowired
+    private SqlSessionFactory sqlSessionFactory;
 
-
-    /**
-     * 根据vid查询单个视频信息，包含用户信息和分区信息
-     * @param aid 视频ID
-     * @return 包含用户信息、分区信息、视频信息的map
-     */
+    @Autowired
+    @Qualifier("taskExecutor")
+    private Executor taskExecutor;
     @Override
     public Map<String, Object> getArticleWithDataById(Integer aid) {
         Map<String, Object> map = new HashMap<>();
         // 先查询 redis
-        Article article = redisUtil.getObject("video:" + aid, Article.class);
+        Article article = redisUtil.getObject("article:" + aid, Article.class);
         if (article == null) {
             // redis 查不到再查数据库
             QueryWrapper<Article> queryWrapper = new QueryWrapper<>();
-            queryWrapper.eq("aid", aid).ne("status", 3);
+            queryWrapper.eq("aid", aid).ne("status", 3); //未被删除
             article = articleMapper.selectOne(queryWrapper);
             if (article != null) {
-                Article finalArtical1 = article;
+                Article article1 = article;
                 CompletableFuture.runAsync(() -> {
-                    redisUtil.setExObjectValue("video:" + aid, finalArtical1);    // 异步更新到redis
+                    redisUtil.setExObjectValue("article" + aid, article1);    // 异步更新到redis
                 }, taskExecutor);
             } else  {
                 return null;
             }
         }
-
         // 多线程异步并行查询用户信息和分区信息并封装
         Article finalArticle = article;
         CompletableFuture<Void> userFuture = CompletableFuture.runAsync(() -> {
-            map.put("user", userService.getUserById(finalArticle.getAid()));
-            map.put("stats", articleStatsService.getArticleStatsById(finalArticle.getAid()));
+            map.put("user", userService.getUserById(finalArticle.getUid()));
         }, taskExecutor);
-        CompletableFuture<Void> categoryFuture = CompletableFuture.runAsync(() -> {
-            map.put("category", categoryService.getCategoryById(finalArticle.getMcId(), finalArticle.getScId()));
-        }, taskExecutor);
-        map.put("video", article);
+        map.put("article",article);
         // 使用join()等待userFuture和categoryFuture任务完成
         userFuture.join();
-        categoryFuture.join();
-
         return map;
-    }
-
-    @Override
-    public List<Map<String, Object>> getArticlesWithDataByIdList(List<Integer> list) {
-        return null;
     }
 
     /**
      * 更新专栏状态，包括过审、不通过、删除，其中审核相关需要管理员权限，删除可以是管理员或者投稿用户
-     *
-     * @param aid    文章ID
+     * @param aid   专栏ID
      * @param status 要修改的状态，1通过 2不通过 3删除
      * @return 无data返回，仅返回响应信息
      */
+
     @Override
     public CustomResponse updateArticleStatus(Integer aid, Integer status) throws IOException {
         CustomResponse customResponse = new CustomResponse();
@@ -149,24 +125,24 @@ public class ArticleServiceImpl implements ArticleService  {
             if (status == 1) {
                 QueryWrapper<Article> queryWrapper = new QueryWrapper<>();
                 queryWrapper.eq("aid", aid).ne("status", 3);
-                Article article = articleMapper.selectOne(queryWrapper);
+                Article article   = articleMapper.selectOne(queryWrapper);
                 if (article == null) {
                     customResponse.setCode(404);
-                    customResponse.setMessage("专栏不见了QAQ");
+                    customResponse.setMessage("文章不见了");
                     return customResponse;
                 }
                 Integer lastStatus = article.getStatus();
                 article.setStatus(1);
                 UpdateWrapper<Article> updateWrapper = new UpdateWrapper<>();
-                updateWrapper.eq("aid", aid).set("status", 1).set("upload_date", new Date());     // 更新专栏状态审核通过
+                updateWrapper.eq("aid", aid).set("status", 1);     // 更新视频状态审核通过
                 int flag = articleMapper.update(null, updateWrapper);
                 if (flag > 0) {
                     // 更新成功
-                    esUtil.updateArticle(article);  // 更新ES专栏文档
+                  //  esUtil.updateArticle(article);  // 更新ES视频文档
                     redisUtil.delMember("article_status:" + lastStatus, aid);     // 从旧状态移除
                     redisUtil.addMember("article_status:1", aid);     // 加入新状态
                     redisUtil.zset("user_article_upload:" + article.getUid(), article.getAid());
-                    redisUtil.delValue("article:" + aid);     // 删除旧的专栏信息
+                    redisUtil.delValue("article:" + aid);     // 删除旧的视频信息
                     return customResponse;
                 } else {
                     // 更新失败，处理错误情况
@@ -182,21 +158,21 @@ public class ArticleServiceImpl implements ArticleService  {
                 Article article = articleMapper.selectOne(queryWrapper);
                 if (article == null) {
                     customResponse.setCode(404);
-                    customResponse.setMessage("专栏不见了QAQ");
+                    customResponse.setMessage("视频不见了QAQ");
                     return customResponse;
                 }
                 Integer lastStatus = article.getStatus();
                 article.setStatus(2);
                 UpdateWrapper<Article> updateWrapper = new UpdateWrapper<>();
-                updateWrapper.eq("aid", aid).set("status", 2);     // 更新专栏状态审核不通过
+                updateWrapper.eq("aid", aid).set("status", 2);     // 更新视频状态审核不通过
                 int flag = articleMapper.update(null, updateWrapper);
                 if (flag > 0) {
                     // 更新成功
-                    esUtil.updateArticle(article);  // 更新ES视频文档
+                  //  esUtil.updateArticle(article);  // 更新ES视频文档
                     redisUtil.delMember("article_status:" + lastStatus, aid);     // 从旧状态移除
                     redisUtil.addMember("article_status:2", aid);     // 加入新状态
                     redisUtil.zsetDelMember("user_article_upload:" + article.getUid(), article.getAid());
-                    redisUtil.delValue("article:" + aid);     // 删除旧的专栏信息
+                    redisUtil.delValue("article:" + aid);     // 删除旧的视频信息
                     return customResponse;
                 } else {
                     // 更新失败，处理错误情况
@@ -215,29 +191,29 @@ public class ArticleServiceImpl implements ArticleService  {
                 return customResponse;
             }
             if (Objects.equals(userId, article.getUid()) || currentUser.isAdmin()) {
-                String articleUrl = article.getArticleUrl();
-                String articlePrefix = articleUrl.split("aliyuncs.com/")[1];  // OSS视频文件名
+                String contentUrl = article.getContentUrl();
+                String articlePrefix = contentUrl.split("aliyuncs.com/")[1];  // OSS视频文件名
                 String coverUrl = article.getCoverUrl();
                 String coverPrefix = coverUrl.split("aliyuncs.com/")[1];  // OSS封面文件名
                 Integer lastStatus = article.getStatus();
                 UpdateWrapper<Article> updateWrapper = new UpdateWrapper<>();
-                updateWrapper.eq("aid", aid).set("status", 3).set("delete_date", new Date());     // 更新专栏状态已删除
+                updateWrapper.eq("aid", aid).set("status", 3).set("delete_date", new Date());     // 更新视频状态已删除
                 int flag = articleMapper.update(null, updateWrapper);
                 if (flag > 0) {
                     // 更新成功
-                    esUtil.deleteVideo(aid);
+                //    esUtil.deleteArticle(aid);
                     redisUtil.delMember("article_status:" + lastStatus, aid);     // 从旧状态移除
-                    redisUtil.delValue("article:" + aid);     // 删除旧的专栏信息
-                    redisUtil.delValue("danmu_idset:" + aid);   // 删除该视频的弹幕
-                    redisUtil.zsetDelMember("user_article_upload:" + article.getUid(), article.getAid());
+                    redisUtil.delValue("article:" + aid);     // 删除旧的视频信息
+                    //redisUtil.delValue("danmu_idset:" + aid);   // 删除该视频的弹幕
+                    redisUtil.zsetDelMember("user_article_upload:" + article.getUid(), article.getVid());
                     // 搞个异步线程去删除OSS的源文件
                     CompletableFuture.runAsync(() -> ossUtil.deleteFiles(articlePrefix), taskExecutor);
                     CompletableFuture.runAsync(() -> ossUtil.deleteFiles(coverPrefix), taskExecutor);
-                    // 批量删除该专栏下的全部评论缓存
+                    // 批量删除该视频下的全部评论缓存
                     CompletableFuture.runAsync(() -> {
                         Set<Object> set = redisUtil.zReverange("comment_article:" + aid, 0, -1);
                         List<String> list = new ArrayList<>();
-                        set.forEach(id -> list.add("comment_article_reply:" + id));
+                        set.forEach(id -> list.add("comment_reply:" + id));
                         list.add("comment_article:" + aid);
                         redisUtil.delValues(list);
                     }, taskExecutor);
@@ -250,12 +226,80 @@ public class ArticleServiceImpl implements ArticleService  {
                 }
             } else {
                 customResponse.setCode(403);
-                customResponse.setMessage("您没有权限删除专栏");
+                customResponse.setMessage("您没有权限删除视频");
                 return customResponse;
             }
         }
         customResponse.setCode(500);
         customResponse.setMessage("更新状态失败");
         return customResponse;
+    }
+
+    /**
+     * 根据id分页获取视频信息，包括用户和分区信息
+     *
+     * @param set      要查询的视频id集合
+     * @param index    分页页码 为空默认是1
+     * @param quantity 每一页查询的数量 为空默认是10
+     * @return 包含用户信息、分区信息、视频信息的map列表
+     */
+    @Override
+    public List<Map<String, Object>> getArticlesWithDataByIds(Set<Object> set, Integer index, Integer quantity) {
+        if (index == null) {
+            index = 1;
+        }
+        if (quantity == null) {
+            quantity = 10;
+        }
+        int startIndex = (index - 1) * quantity;
+        int endIndex = startIndex + quantity;
+        // 检查数据是否足够满足分页查询
+        if (startIndex > set.size()) {
+            // 如果数据不足以填充当前分页，返回空列表
+            return Collections.emptyList();
+        }
+        List<Article> articleList = new CopyOnWriteArrayList<>();   // 使用线程安全的集合类 CopyOnWriteArrayList 保证多线程处理共享List不会出现并发问题
+
+        // 直接数据库分页查询    （平均耗时 13ms）
+        List<Object> idList = new ArrayList<>(set);
+        endIndex = Math.min(endIndex, idList.size());
+        List<Object> sublist = idList.subList(startIndex, endIndex);
+        QueryWrapper<Article> queryWrapper = new QueryWrapper<>();
+        queryWrapper.in("aid", sublist).ne("status", 3);
+        articleList = articleMapper.selectList(queryWrapper);
+        if (articleList.isEmpty()) return Collections.emptyList();
+
+        // 并行处理每一个视频，提高效率
+        // 先将videoList转换为Stream
+        Stream<Article> articleStream = articleList.stream();
+        List<Map<String, Object>> mapList = articleStream.parallel() // 利用parallel()并行处理
+                .map(article -> {
+//                    long start = System.currentTimeMillis();
+//                    System.out.println("================ 开始查询 " + article.getVid() + " 号视频相关信息 ===============   当前时间 " + start);
+                    Map<String, Object> map = new HashMap<>();
+                    map.put("article", article);
+
+                    CompletableFuture<Void> userFuture = CompletableFuture.runAsync(() -> {
+                        map.put("user", userService.getUserById(article.getUid()));
+                        map.put("stats", videoStatsService.getVideoStatsById(article.getAid()));
+                    }, taskExecutor);
+
+//                    CompletableFuture<Void> categoryFuture = CompletableFuture.runAsync(() -> {
+//                        map.put("category", categoryService.getCategoryById(article.getMcId(), article.getScId()));
+//                    }, taskExecutor);
+
+                    // 使用join()等待全部任务完成
+                    userFuture.join();
+                    //categoryFuture.join();
+//                    long end = System.currentTimeMillis();
+//                    System.out.println("================ 结束查询 " + article.getVid() + " 号视频相关信息 ===============   当前时间 " + end + "   耗时 " + (end - start));
+
+                    return map;
+                })
+                .collect(Collectors.toList());
+
+//        end = System.currentTimeMillis();
+//        System.out.println("封装耗时：" + (end - start));
+        return mapList;
     }
 }
