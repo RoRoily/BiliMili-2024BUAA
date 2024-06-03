@@ -10,6 +10,35 @@ import { get, post } from "./network/request";
 import router from "./router";
 import store from "./store";
 import VueParticles from "vue3-particles"; // 粒子效果模板
+
+import VMdPreview from '@kangc/v-md-editor/lib/preview';
+import '@kangc/v-md-editor/lib/style/preview.css';
+import githubTheme from '@kangc/v-md-editor/lib/theme/github.js';
+import '@kangc/v-md-editor/lib/theme/style/github.css';
+// highlight.js
+import hljs from 'highlight.js';
+// Prism
+import Prism from 'prismjs';
+// 代码高亮
+import 'prismjs/components/prism-json';
+// 显示代码行数
+import createLineNumbertPlugin from '@kangc/v-md-editor/lib/plugins/line-number/index';
+// 快速复制代码
+import createCopyCodePlugin from '@kangc/v-md-editor/lib/plugins/copy-code/index';
+import '@kangc/v-md-editor/lib/plugins/copy-code/copy-code.css';
+// katex
+import createKatexPlugin from '@kangc/v-md-editor/lib/plugins/katex/cdn';
+
+VMdPreview.use(githubTheme, {
+  Hljs: hljs,
+});
+VMdPreview.use(githubTheme, {
+  Prism,
+});
+VMdPreview.use(createLineNumbertPlugin());
+VMdPreview.use(createCopyCodePlugin());
+VMdPreview.use(createKatexPlugin());
+
 // 全局样式表
 import "./assets/css/base.css";
 
@@ -29,4 +58,5 @@ for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
 app.use(store);
 app.use(router);
 app.use(VueParticles);
+app.use(VMdPreview);
 app.mount("#app");

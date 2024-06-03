@@ -42,7 +42,7 @@ public class ArticleReviewServiceImpl implements ArticleReviewService {
             customResponse.setMessage("您不是管理员，无权访问");
             return customResponse;
         }
-        Long total = redisUtil.scard("article_status:" + status);
+        Long total = (long) articleMapper.getArticleIdsByStatus(status).size();
         customResponse.setData(total);
         return customResponse;
     }

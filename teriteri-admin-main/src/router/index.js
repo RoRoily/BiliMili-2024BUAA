@@ -11,6 +11,7 @@ const Tag = () => import("@/views/content/TagManage.vue");
 const Video = () => import("@/views/review/VideoReview.vue");
 const VideoDetail = () => import("@/views/review/detail/VideoDetail.vue");
 const Article = () => import("@/views/review/ArticleReview.vue");
+const ArticleDetail = () => import("@/views/review/detail/ArticleDetail.vue");
 const Avatar = () => import("@/views/review/AvatarReview.vue");
 const Dynamic = () => import("@/views/review/DynamicReview.vue");
 const Comment = () => import("@/views/review/CommentReview.vue");
@@ -52,7 +53,13 @@ const routes = [
               { path: '/review/video/detail/:vid', name: 'videoDetail', component: VideoDetail, meta: { requestAuth: true } },
             ]
           },
-          { path: '/review/article', component: Article, meta: { requestAuth: true } },
+          { path: '/review/article',
+            redirect: '/review/article/form',
+            children: [
+              { path: '/review/article/form', component: Article, meta: { requestAuth: true} },
+              { path: '/review/article/detail/:aid', name: 'articleDetail', component: ArticleDetail, meta: {requestAuth: true} },
+            ]
+          },
           { path: '/review/avatar', component: Avatar, meta: { requestAuth: true } },
           { path: '/review/dynamic', component: Dynamic, meta: { requestAuth: true } },
           { path: '/review/comment', component: Comment, meta: { requestAuth: true } },

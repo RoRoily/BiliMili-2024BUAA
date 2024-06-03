@@ -1,8 +1,11 @@
 package com.teriteri.backend.controller;
 
+import com.teriteri.backend.mapper.ArticleMapper;
+import com.teriteri.backend.pojo.Article;
 import com.teriteri.backend.pojo.CustomResponse;
 import com.teriteri.backend.pojo.dto.ArticleUploadDTO;
 import com.teriteri.backend.service.article.ArticleUploadService;
+import com.teriteri.backend.service.utils.CurrentUser;
 import com.teriteri.backend.utils.OssUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -16,6 +19,11 @@ public class ArticleUploadController {
     private ArticleUploadService articleUploadService;
     @Autowired
     private OssUtil ossUtil;
+
+    @Autowired
+    private CurrentUser currentUser;
+    @Autowired
+    private ArticleMapper articleMapper;
 
 
 
@@ -35,21 +43,19 @@ public class ArticleUploadController {
     }
 
     /**
-     * 添加视频投稿
+     * 添加文章投稿
      * @param title 投稿标题
-     * @param type  视频类型 1自制 2转载
-     * @param auth  作者声明 0不声明 1未经允许禁止转载
-     * @param duration 视频总时长
-     * @param mcid  主分区ID
-     * @param scid  子分区ID
-     * @param tags  标签
-     * @param descr 简介
+     * @param cover  文章封面
+     * @param content  文章内容的markdown文件
      * @return  响应对象
      */
-    @PostMapping("/article/add")
-    public CustomResponse addArticle(
+    @PostMapping("/article/add/all")
+    public CustomResponse addAllArticle(
+            @RequestParam("cover") MultipartFile cover,
             //@RequestParam("cover") MultipartFile cover,
             //@RequestParam("title") String title,
+            @RequestParam("title") String title,
+            @RequestParam("vid") String vid,
             @RequestParam("content") MultipartFile content
             //@RequestParam("type") Integer type,
             //@RequestParam("auth") Integer auth,
@@ -58,16 +64,22 @@ public class ArticleUploadController {
             //@RequestParam("scid") String scid,
             //@RequestParam("tags") String tags,
             //@RequestParam("descr") String descr
-
-
-
     ) {
         //ArticleUploadDTO articleUploadDTO = new ArticleUploadDTO(null, title, content,type, auth, duration, mcid, scid, tags, descr, null);
         ArticleUploadDTO articleUploadDTO = new ArticleUploadDTO(null, content);
         try {
             //return articleUploadService.addArticle(articleUploadDTO);
             String url = ossUtil.uploadArticle(content);
-            return new CustomResponse(200,url,null);
+            String url2 = ossUtil.uploadImage(cover,"articleCover");
+            Article article = new Article();
+            article.setTitle(title);
+            article.setVid(vid);
+            article.setContentUrl(url);
+            article.setCoverUrl(url2);
+            article.setStatus(0);
+            article.setUid(currentUser.getUserId()); // 假设 currentUser 对象可以获取当前用户的 ID
+            articleMapper.insert(article);
+            return new CustomResponse(200,"文章上传成功",article.getAid().toString());
         } catch (Exception e) {
             e.printStackTrace();
             return new CustomResponse(500, "封面上传失败", null);
